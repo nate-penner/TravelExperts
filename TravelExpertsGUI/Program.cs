@@ -6,6 +6,7 @@ using System.Windows.Forms;
 
 namespace TravelExpertsGUI
 {
+    // test comment in Program.cs
     static class Program
     {
         /// <summary>
