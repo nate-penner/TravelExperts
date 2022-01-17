@@ -19,6 +19,7 @@ namespace TravelExpertsGUI
                 components.Dispose();
             }
             base.Dispose(disposing);
+            //Hello World Alex C.
         }
 
         #region Windows Form Designer generated code
