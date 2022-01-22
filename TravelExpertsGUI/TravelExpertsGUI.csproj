@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\TravelExpertsDataAPI\TravelExpertsDataAPI.csproj" />
     <ProjectReference Include="..\TravelExpertsData\TravelExpertsData.csproj" />
   </ItemGroup>
 
