@@ -10,13 +10,17 @@ using System.Windows.Forms;
 
 namespace TravelExpertsGUI
 {
-    public partial class Form1 : Form
+    public partial class frmMain : Form
     {
         // WOO new repo on branch!
-        public Form1()
+        public frmMain()
         {
             InitializeComponent();
         }
 
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            
+        }
     }
 }
