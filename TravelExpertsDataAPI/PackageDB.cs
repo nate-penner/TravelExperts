@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,8 +19,23 @@ namespace TravelExpertsDataAPI
         public static List<Package> GetPackages()
         {
             List<Package> packages = null;
+            using (TravelExpertsContext db = new TravelExpertsContext())
+            {
+                try
+                {
+                    packages = db.Packages.ToList();
+                }
+                catch (DbUpdateException ex)
+                {
+                    Handles.HandleDbUpdateException(ex);
+                }
+                catch (Exception ex)
+                {
 
-            return packages;
+                }
+            }
+
+                return packages;
         }
 
         /// <summary>
