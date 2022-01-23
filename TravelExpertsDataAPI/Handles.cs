@@ -8,6 +8,11 @@ using System.Text;
 using System.Threading.Tasks;
 using TravelExpertsData;
 
+/* A class to hold all error handles for the TravelExpertsDataAPI
+ * Author: Daniel Palmer
+ * 2022-01-21
+ */
+
 namespace TravelExpertsDataAPI
 {
     public static class Handles 

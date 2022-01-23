@@ -44,16 +44,28 @@ namespace TravelExpertsGUI
             this.lstProductTabProducts = new System.Windows.Forms.ListBox();
             this.label1 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.tabSuppliers = new System.Windows.Forms.TabPage();
+            this.btnSupplierTabModify = new System.Windows.Forms.Button();
+            this.btnSupplierTabAdd = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.txtSupplierTabProductCount = new System.Windows.Forms.TextBox();
+            this.txtSupplierTabSupplierId = new System.Windows.Forms.TextBox();
+            this.lstSupplierTabProducts = new System.Windows.Forms.ListBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.lstSupplierTabSuppliers = new System.Windows.Forms.ListBox();
             this.tabControl1.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            this.tabSuppliers.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Controls.Add(this.tabPage3);
-            this.tabControl1.Location = new System.Drawing.Point(13, 13);
+            this.tabControl1.Controls.Add(this.tabSuppliers);
+            this.tabControl1.Location = new System.Drawing.Point(12, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(652, 425);
@@ -181,13 +193,111 @@ namespace TravelExpertsGUI
             this.label1.Text = "Product List:";
             // 
             // tabPage3
+            // tabSuppliers
             // 
-            this.tabPage3.Location = new System.Drawing.Point(4, 24);
-            this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(644, 397);
-            this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "Suppliers";
-            this.tabPage3.UseVisualStyleBackColor = true;
+            this.tabSuppliers.Controls.Add(this.btnSupplierTabModify);
+            this.tabSuppliers.Controls.Add(this.btnSupplierTabAdd);
+            this.tabSuppliers.Controls.Add(this.label4);
+            this.tabSuppliers.Controls.Add(this.label3);
+            this.tabSuppliers.Controls.Add(this.txtSupplierTabProductCount);
+            this.tabSuppliers.Controls.Add(this.txtSupplierTabSupplierId);
+            this.tabSuppliers.Controls.Add(this.lstSupplierTabProducts);
+            this.tabSuppliers.Controls.Add(this.label2);
+            this.tabSuppliers.Controls.Add(this.label1);
+            this.tabSuppliers.Controls.Add(this.lstSupplierTabSuppliers);
+            this.tabSuppliers.Location = new System.Drawing.Point(4, 24);
+            this.tabSuppliers.Name = "tabSuppliers";
+            this.tabSuppliers.Size = new System.Drawing.Size(644, 397);
+            this.tabSuppliers.TabIndex = 2;
+            this.tabSuppliers.Text = "Suppliers";
+            this.tabSuppliers.UseVisualStyleBackColor = true;
+            // 
+            // btnSupplierTabModify
+            // 
+            this.btnSupplierTabModify.Location = new System.Drawing.Point(153, 296);
+            this.btnSupplierTabModify.Name = "btnSupplierTabModify";
+            this.btnSupplierTabModify.Size = new System.Drawing.Size(75, 23);
+            this.btnSupplierTabModify.TabIndex = 9;
+            this.btnSupplierTabModify.Text = "Modify";
+            this.btnSupplierTabModify.UseVisualStyleBackColor = true;
+            // 
+            // btnSupplierTabAdd
+            // 
+            this.btnSupplierTabAdd.Location = new System.Drawing.Point(36, 296);
+            this.btnSupplierTabAdd.Name = "btnSupplierTabAdd";
+            this.btnSupplierTabAdd.Size = new System.Drawing.Size(75, 23);
+            this.btnSupplierTabAdd.TabIndex = 8;
+            this.btnSupplierTabAdd.Text = "Add";
+            this.btnSupplierTabAdd.UseVisualStyleBackColor = true;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(350, 243);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(62, 15);
+            this.label4.TabIndex = 7;
+            this.label4.Text = "ProductId:";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(75, 243);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(63, 15);
+            this.label3.TabIndex = 6;
+            this.label3.Text = "SupplierId:";
+            // 
+            // txtSupplierTabProductCount
+            // 
+            this.txtSupplierTabProductCount.Location = new System.Drawing.Point(418, 240);
+            this.txtSupplierTabProductCount.Name = "txtSupplierTabProductCount";
+            this.txtSupplierTabProductCount.Size = new System.Drawing.Size(100, 23);
+            this.txtSupplierTabProductCount.TabIndex = 5;
+            // 
+            // txtSupplierTabSupplierId
+            // 
+            this.txtSupplierTabSupplierId.Location = new System.Drawing.Point(144, 240);
+            this.txtSupplierTabSupplierId.Name = "txtSupplierTabSupplierId";
+            this.txtSupplierTabSupplierId.Size = new System.Drawing.Size(100, 23);
+            this.txtSupplierTabSupplierId.TabIndex = 4;
+            // 
+            // lstSupplierTabProducts
+            // 
+            this.lstSupplierTabProducts.FormattingEnabled = true;
+            this.lstSupplierTabProducts.ItemHeight = 15;
+            this.lstSupplierTabProducts.Location = new System.Drawing.Point(301, 40);
+            this.lstSupplierTabProducts.Name = "lstSupplierTabProducts";
+            this.lstSupplierTabProducts.Size = new System.Drawing.Size(217, 184);
+            this.lstSupplierTabProducts.TabIndex = 3;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(301, 19);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(54, 15);
+            this.label2.TabIndex = 2;
+            this.label2.Text = "Products";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(17, 19);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(55, 15);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "Suppliers";
+            // 
+            // lstSupplierTabSuppliers
+            // 
+            this.lstSupplierTabSuppliers.FormattingEnabled = true;
+            this.lstSupplierTabSuppliers.ItemHeight = 15;
+            this.lstSupplierTabSuppliers.Location = new System.Drawing.Point(17, 40);
+            this.lstSupplierTabSuppliers.Name = "lstSupplierTabSuppliers";
+            this.lstSupplierTabSuppliers.Size = new System.Drawing.Size(227, 184);
+            this.lstSupplierTabSuppliers.TabIndex = 0;
+            this.lstSupplierTabSuppliers.SelectedIndexChanged += new System.EventHandler(this.lstSupplierTabSuppliers_SelectedIndexChanged);
             // 
             // frmMain
             // 
@@ -199,6 +309,8 @@ namespace TravelExpertsGUI
             this.Text = "Travel Experts 0.1-PRE-ALPHA";
             this.Load += new System.EventHandler(this.frmMain_Load);
             this.tabControl1.ResumeLayout(false);
+            this.tabSuppliers.ResumeLayout(false);
+            this.tabSuppliers.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
             this.ResumeLayout(false);
@@ -221,6 +333,17 @@ namespace TravelExpertsGUI
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox txtProductTabTotalSuppliers;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TabPage tabSuppliers;
+        private System.Windows.Forms.ListBox lstSupplierTabSuppliers;
+        private System.Windows.Forms.Button btnSupplierTabModify;
+        private System.Windows.Forms.Button btnSupplierTabAdd;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox txtSupplierTabProductCount;
+        private System.Windows.Forms.TextBox txtSupplierTabSupplierId;
+        private System.Windows.Forms.ListBox lstSupplierTabProducts;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label1;
     }
 }
 
