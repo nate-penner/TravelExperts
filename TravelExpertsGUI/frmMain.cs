@@ -14,7 +14,7 @@ namespace TravelExpertsGUI
         Dictionary<int, int> productTabProductKeyMap = new Dictionary<int, int>();
 
         // A list of all products in the database
-        List<Product> products;
+        List<Product> productTabProducts;
 
         // WOO new repo on branch!
         public frmMain()
@@ -26,10 +26,10 @@ namespace TravelExpertsGUI
         {
             // Product panel code
             int counter = 0;
-            products = ProductDB.GetProducts()
+            productTabProducts = ProductDB.GetProducts()
                 .OrderBy(p => p.ProdName)
                 .ToList();
-            products.ForEach( 
+            productTabProducts.ForEach( 
                 p => {
                     lstProductTabProducts.Items.Add(p.ProdName);
                     productTabProductKeyMap.Add(counter, p.ProductId);
@@ -43,7 +43,7 @@ namespace TravelExpertsGUI
             // Get the Product from the listbox selection
             int selected = lstProductTabProducts.SelectedIndex;
             txtProductTabProductID.Text = productTabProductKeyMap[selected].ToString();
-            Product product = products
+            Product product = productTabProducts
                 .Find(p => p.ProductId == productTabProductKeyMap[selected]);
 
             // Get the list of suppliers for the selected product
