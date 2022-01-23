@@ -13,6 +13,7 @@ namespace TravelExpertsDataAPI
         * Implementation author(s): ... 
         * Creation Date: 2022-01-21
     */
+
     public static class ProductDB
     {
         /// <summary>
@@ -24,6 +25,10 @@ namespace TravelExpertsDataAPI
             List<Product> products = null;
 
             // Get the product list from database
+            using (TravelExpertsContext db = new TravelExpertsContext())
+            {
+                products = db.Products.ToList();
+            }
 
             return products;
         }
@@ -77,6 +82,32 @@ namespace TravelExpertsDataAPI
         public static void RemoveProduct(Product product)
         {
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Get a list of suppliers for the product
+        /// </summary>
+        /// <param name="product">The product to lookup</param>
+        /// <returns>A list of suppliers providing this product</returns>
+        public static List<Supplier> GetSuppliers(Product product)
+        {
+            List<Supplier> suppliers = null;
+
+            using(TravelExpertsContext db = new TravelExpertsContext())
+            {
+                suppliers = db.ProductsSuppliers
+                    .Join(
+                        db.Suppliers,
+                        ps => ps.SupplierId,
+                        s => s.SupplierId,
+                        (ps, s) => new { ps, s }
+                    )
+                    .Where(o => o.ps.ProductId == product.ProductId)
+                    .Select(o => o.s)
+                    .ToList();
+            }
+
+            return suppliers;
         }
     }
 }
