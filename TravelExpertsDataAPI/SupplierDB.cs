@@ -1,4 +1,5 @@
-﻿using System;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,12 +19,27 @@ namespace TravelExpertsDataAPI
         /// <summary>
         /// Get a list of all suppliers
         /// </summary>
+        /// <author>Daniel Palmer</author>
         /// <returns>A list of all suppliers</returns>
         public static List<Supplier> GetSuppliers()
         {
             List<Supplier> suppliers = null;
 
             // Get suppliers from db
+            using (TravelExpertsContext db = new TravelExpertsContext())
+            {
+                try
+                {
+                    suppliers = db.Suppliers.OrderBy(o => o.SupName).ToList();
+                }
+                catch (DbUpdateException ex)
+                {
+                    Handles.HandleDbUpdateException(ex);
+                }
+                catch (Exception ex)
+                {
+                }
+            }
 
             return suppliers;
         }

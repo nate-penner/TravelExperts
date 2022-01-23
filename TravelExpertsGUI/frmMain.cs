@@ -6,6 +6,12 @@ using System.Windows.Forms;
 using TravelExpertsData;
 using TravelExpertsDataAPI;
 
+/* A GUI design to allow for easy database management and interaction
+ * Form serves as home page for application, allowing user to cycle through various pages to view particular data
+ * Authors: Nate Penner, Daniel Palmer, alex Cress
+ * 2022-01-17
+ */
+
 namespace TravelExpertsGUI
 {
     public partial class frmMain : Form
@@ -16,14 +22,20 @@ namespace TravelExpertsGUI
         // A list of all products in the database
         List<Product> productTabProducts;
 
-        // WOO new repo on branch!
         public frmMain()
         {
             InitializeComponent();
         }
-
         private void frmMain_Load(object sender, EventArgs e)
-        {
+        {   
+            // The following code block was writen by Daniel Palmer
+            // Sets up the supplier tab form controls
+            List<Supplier> SupplierTabSuppliers = TravelExpertsDataAPI.SupplierDB.GetSuppliers();
+            // Fills the supplier listbox with all suppliers
+            lstSupplierTabSuppliers.DataSource = SupplierTabSuppliers;
+            lstSupplierTabSuppliers.DisplayMember = "SupName";
+            // End code block by Daniel Palmer
+
             // Product panel code
             int counter = 0;
             productTabProducts = ProductDB.GetProducts()
@@ -36,6 +48,19 @@ namespace TravelExpertsGUI
                     counter++;
                 }
             );
+        }
+        // Populates the tab with details about selected supplier Author: Daniel Palmer
+        private void lstSupplierTabSuppliers_SelectedIndexChanged(object sender, EventArgs e)
+               {
+            // Establishes the selected supplier and collects all products the supplier offers
+            Supplier supplier = (Supplier)lstSupplierTabSuppliers.SelectedValue;
+            List<Product> product = TravelExpertsDataAPI.ProductDB.GetProducts(supplier);
+
+            // Displays all the supplier and product values to the form
+            txtSupplierTabSupplierId.Text = supplier.SupplierId.ToString();
+            txtSupplierTabProductCount.Text = product.Count().ToString();
+            lstSupplierTabProducts.DataSource = product;
+            lstSupplierTabProducts.DisplayMember = "ProdName";
         }
 
         private void lstProductTabProducts_SelectedIndexChanged(object sender, EventArgs e)
@@ -58,5 +83,6 @@ namespace TravelExpertsGUI
             // Show suppliers count
             txtProductTabTotalSuppliers.Text = suppliers.Count.ToString();
         }
+
     }
 }

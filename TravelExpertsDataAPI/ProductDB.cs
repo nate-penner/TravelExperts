@@ -37,10 +37,23 @@ namespace TravelExpertsDataAPI
         /// Gets a list of all products for the specified supplier
         /// </summary>
         /// <param name="supplier">The supplier</param>
+        /// <author>Daniel Palmer</author>
         /// <returns>All products provided by the supplier</returns>
         public static List<Product> GetProducts(Supplier supplier)
         {
             List<Product> products = null;
+
+            using (TravelExpertsContext db = new TravelExpertsContext())
+            {
+                products = db.ProductsSuppliers.Join(
+                                                     db.Products, 
+                                                     p => p.ProductId, 
+                                                     ps => ps.ProductId, 
+                                                     (ps, p) => new { p, ps })
+                                                .Where(o => o.ps.SupplierId == supplier.SupplierId)
+                                                .Select(o => o.p)
+                                                .ToList();
+            }
 
             return products;
         }
