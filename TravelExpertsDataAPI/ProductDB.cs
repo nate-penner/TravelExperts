@@ -13,6 +13,7 @@ namespace TravelExpertsDataAPI
         * Implementation author(s): ... 
         * Creation Date: 2022-01-21
     */
+
     public static class ProductDB
     {
         /// <summary>
@@ -24,6 +25,10 @@ namespace TravelExpertsDataAPI
             List<Product> products = null;
 
             // Get the product list from database
+            using (TravelExpertsContext db = new TravelExpertsContext())
+            {
+                products = db.Products.ToList();
+            }
 
             return products;
         }
