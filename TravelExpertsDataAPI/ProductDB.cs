@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TravelExpertsData;
+using Microsoft.EntityFrameworkCore;
 
 namespace TravelExpertsDataAPI
 {
@@ -77,6 +78,11 @@ namespace TravelExpertsDataAPI
         public static void AddProduct(Product product)
         {
             // Add the product to the db
+            using (TravelExpertsContext db = new TravelExpertsContext())
+            {
+                db.Products.Add(product);
+                db.SaveChanges();
+            }
         }
 
         /// <summary>
@@ -86,6 +92,19 @@ namespace TravelExpertsDataAPI
         public static void UpdateProduct(Product product)
         {
             // Update the product in the db
+            try
+            {
+                using(TravelExpertsContext db = new TravelExpertsContext())
+                {
+                    Product dbProduct = db.Products.Find(product.ProductId);
+                    dbProduct.ProdName = product.ProdName;
+                    db.Products.Update(dbProduct);
+                    db.SaveChanges();
+                }
+            } catch (Exception)
+            {
+                throw;
+            }
         }
 
         /// <summary>

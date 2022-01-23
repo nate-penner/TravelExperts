@@ -15,7 +15,7 @@ using TravelExpertsData;
 
 namespace TravelExpertsDataAPI
 {
-    public static class Handles 
+    public static class Handles
     { 
         public static void HandleDbUpdateException(DbUpdateException ex) // problems with performing SaveChanges
         {
