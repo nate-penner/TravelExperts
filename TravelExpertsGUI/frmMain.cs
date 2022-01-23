@@ -49,7 +49,7 @@ namespace TravelExpertsGUI
                 }
             );
         }
-        / Populates the tab with details about selected supplier Author: Daniel Palmer
+        // Populates the tab with details about selected supplier Author: Daniel Palmer
         private void lstSupplierTabSuppliers_SelectedIndexChanged(object sender, EventArgs e)
                {
             // Establishes the selected supplier and collects all products the supplier offers
@@ -83,5 +83,6 @@ namespace TravelExpertsGUI
             // Show suppliers count
             txtProductTabTotalSuppliers.Text = suppliers.Count.ToString();
         }
+
     }
 }
