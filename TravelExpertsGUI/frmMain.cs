@@ -11,7 +11,7 @@ namespace TravelExpertsGUI
     public partial class frmMain : Form
     {
         // productKeyMap maps the ListBox indices to the ProductId from the database
-        Dictionary<int, int> productKeyMap = new Dictionary<int, int>();
+        Dictionary<int, int> productTabProductKeyMap = new Dictionary<int, int>();
 
         // A list of all products in the database
         List<Product> products;
@@ -32,25 +32,30 @@ namespace TravelExpertsGUI
             products.ForEach( 
                 p => {
                     lstProductTabProducts.Items.Add(p.ProdName);
-                    productKeyMap.Add(counter, p.ProductId);
+                    productTabProductKeyMap.Add(counter, p.ProductId);
                     counter++;
                 }
             );
         }
 
-        private void lstProducts_SelectedIndexChanged(object sender, EventArgs e)
+        private void lstProductTabProducts_SelectedIndexChanged(object sender, EventArgs e)
         {
+            // Get the Product from the listbox selection
             int selected = lstProductTabProducts.SelectedIndex;
-            lstProductTabSuppliers.Items.Clear();
-            txtProductTabProductID.Text = productKeyMap[selected].ToString();
+            txtProductTabProductID.Text = productTabProductKeyMap[selected].ToString();
             Product product = products
-                .Find(p => p.ProductId == productKeyMap[selected]);
+                .Find(p => p.ProductId == productTabProductKeyMap[selected]);
 
-            List<Supplier> suppliers = ProductDB
+            // Get the list of suppliers for the selected product
+            List<Supplier> suppliers = SupplierDB
                 .GetSuppliers(product)
                 .OrderBy(s => s.SupName).ToList();
 
+            // Clear the suppliers tab and load new data
+            lstProductTabSuppliers.Items.Clear();
             suppliers.ForEach(s => lstProductTabSuppliers.Items.Add(s.SupName));
+
+            // Show suppliers count
             txtProductTabTotalSuppliers.Text = suppliers.Count.ToString();
         }
     }

@@ -27,17 +27,29 @@ namespace TravelExpertsDataAPI
 
             return suppliers;
         }
-
+        
         /// <summary>
-        /// Gets a list of supplier for a certain product
+        /// Get a list of suppliers for the product
         /// </summary>
-        /// <param name="product">The product to find suppliers for</param>
-        /// <returns>A list of suppliers</returns>
+        /// <param name="product">The product to lookup</param>
+        /// <returns>A list of suppliers providing this product</returns>
         public static List<Supplier> GetSuppliers(Product product)
         {
             List<Supplier> suppliers = null;
 
-            // Get suppliers for this product from db
+            using (TravelExpertsContext db = new TravelExpertsContext())
+            {
+                suppliers = db.ProductsSuppliers
+                    .Join(
+                        db.Suppliers,
+                        ps => ps.SupplierId,
+                        s => s.SupplierId,
+                        (ps, s) => new { ps, s }
+                    )
+                    .Where(o => o.ps.ProductId == product.ProductId)
+                    .Select(o => o.s)
+                    .ToList();
+            }
 
             return suppliers;
         }

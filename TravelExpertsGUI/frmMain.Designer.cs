@@ -169,7 +169,7 @@ namespace TravelExpertsGUI
             this.lstProductTabProducts.Name = "lstProductTabProducts";
             this.lstProductTabProducts.Size = new System.Drawing.Size(169, 154);
             this.lstProductTabProducts.TabIndex = 1;
-            this.lstProductTabProducts.SelectedIndexChanged += new System.EventHandler(this.lstProducts_SelectedIndexChanged);
+            this.lstProductTabProducts.SelectedIndexChanged += new System.EventHandler(this.lstProductTabProducts_SelectedIndexChanged);
             // 
             // label1
             // 
