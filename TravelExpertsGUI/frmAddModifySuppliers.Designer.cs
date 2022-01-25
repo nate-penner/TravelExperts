@@ -36,6 +36,9 @@ namespace TravelExpertsGUI
             this.lstProducts = new System.Windows.Forms.ListBox();
             this.btnOk = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
+            this.lstAddedProducts = new System.Windows.Forms.ListBox();
+            this.btnAddProduct = new System.Windows.Forms.Button();
+            this.btnRemoveProduct = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // lblSupplierId
@@ -74,9 +77,9 @@ namespace TravelExpertsGUI
             // 
             this.lstProducts.FormattingEnabled = true;
             this.lstProducts.ItemHeight = 15;
-            this.lstProducts.Location = new System.Drawing.Point(354, 61);
+            this.lstProducts.Location = new System.Drawing.Point(349, 58);
             this.lstProducts.Name = "lstProducts";
-            this.lstProducts.Size = new System.Drawing.Size(336, 229);
+            this.lstProducts.Size = new System.Drawing.Size(136, 244);
             this.lstProducts.TabIndex = 4;
             // 
             // btnOk
@@ -87,6 +90,7 @@ namespace TravelExpertsGUI
             this.btnOk.TabIndex = 5;
             this.btnOk.Text = "Ok";
             this.btnOk.UseVisualStyleBackColor = true;
+            this.btnOk.Click += new System.EventHandler(this.btnOk_Click);
             // 
             // btnCancel
             // 
@@ -97,11 +101,43 @@ namespace TravelExpertsGUI
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
             // 
-            // frmAddModifyProductsSuppliers
+            // lstAddedProducts
+            // 
+            this.lstAddedProducts.FormattingEnabled = true;
+            this.lstAddedProducts.ItemHeight = 15;
+            this.lstAddedProducts.Location = new System.Drawing.Point(589, 58);
+            this.lstAddedProducts.Name = "lstAddedProducts";
+            this.lstAddedProducts.Size = new System.Drawing.Size(136, 244);
+            this.lstAddedProducts.TabIndex = 7;
+            // 
+            // btnAddProduct
+            // 
+            this.btnAddProduct.Location = new System.Drawing.Point(491, 97);
+            this.btnAddProduct.Name = "btnAddProduct";
+            this.btnAddProduct.Size = new System.Drawing.Size(92, 46);
+            this.btnAddProduct.TabIndex = 8;
+            this.btnAddProduct.Text = "Add Product";
+            this.btnAddProduct.UseVisualStyleBackColor = true;
+            this.btnAddProduct.Click += new System.EventHandler(this.btnAddProduct_Click);
+            // 
+            // btnRemoveProduct
+            // 
+            this.btnRemoveProduct.Location = new System.Drawing.Point(491, 199);
+            this.btnRemoveProduct.Name = "btnRemoveProduct";
+            this.btnRemoveProduct.Size = new System.Drawing.Size(92, 44);
+            this.btnRemoveProduct.TabIndex = 9;
+            this.btnRemoveProduct.Text = "Remove Product";
+            this.btnRemoveProduct.UseVisualStyleBackColor = true;
+            this.btnRemoveProduct.Click += new System.EventHandler(this.btnRemoveProduct_Click);
+            // 
+            // frmAddModifySuppliers
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.btnRemoveProduct);
+            this.Controls.Add(this.btnAddProduct);
+            this.Controls.Add(this.lstAddedProducts);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOk);
             this.Controls.Add(this.lstProducts);
@@ -109,7 +145,7 @@ namespace TravelExpertsGUI
             this.Controls.Add(this.txtSupplierId);
             this.Controls.Add(this.lblSupplierName);
             this.Controls.Add(this.lblSupplierId);
-            this.Name = "frmAddModifyProductsSuppliers";
+            this.Name = "frmAddModifySuppliers";
             this.Text = "frmAddModifyProductsSuppliers";
             this.Load += new System.EventHandler(this.frmAddModifyProductsSuppliers_Load);
             this.ResumeLayout(false);
@@ -126,5 +162,8 @@ namespace TravelExpertsGUI
         private System.Windows.Forms.ListBox lstProducts;
         private System.Windows.Forms.Button btnOk;
         private System.Windows.Forms.Button btnCancel;
+        private System.Windows.Forms.ListBox lstAddedProducts;
+        private System.Windows.Forms.Button btnAddProduct;
+        private System.Windows.Forms.Button btnRemoveProduct;
     }
 }

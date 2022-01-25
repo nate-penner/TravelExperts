@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
 using TravelExpertsData;
@@ -141,10 +142,17 @@ namespace TravelExpertsGUI
         private void btnSupplierTabAdd_Click(object sender, EventArgs e)
         {
             frmAddModifySuppliers AddForm = new frmAddModifySuppliers();
-            AddForm.CurrentSupplier = (Supplier)lstSupplierTabSuppliers.SelectedValue;
             AddForm.IsAdd = true;
+            AddForm.CurrentSupplier = new Supplier();
 
             DialogResult result = AddForm.ShowDialog();
+
+            if(result == DialogResult.OK)
+            {
+                Supplier CurrentSupplier = AddForm.CurrentSupplier;
+                List<Product> AddedProducts = AddForm.AddedProducts;
+
+            }
         }
     }
 }
