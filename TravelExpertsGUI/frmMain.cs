@@ -137,5 +137,14 @@ namespace TravelExpertsGUI
             // Show suppliers count
             txtProductTabTotalSuppliers.Text = suppliers.Count.ToString();
         }
+
+        private void btnSupplierTabAdd_Click(object sender, EventArgs e)
+        {
+            frmAddModifySuppliers AddForm = new frmAddModifySuppliers();
+            AddForm.CurrentSupplier = (Supplier)lstSupplierTabSuppliers.SelectedValue;
+            AddForm.IsAdd = true;
+
+            DialogResult result = AddForm.ShowDialog();
+        }
     }
 }

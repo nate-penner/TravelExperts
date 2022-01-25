@@ -230,6 +230,7 @@ namespace TravelExpertsGUI
             this.btnSupplierTabAdd.TabIndex = 8;
             this.btnSupplierTabAdd.Text = "Add";
             this.btnSupplierTabAdd.UseVisualStyleBackColor = true;
+            this.btnSupplierTabAdd.Click += new System.EventHandler(this.btnSupplierTabAdd_Click);
             // 
             // lblSupplierTabProductId
             // 
