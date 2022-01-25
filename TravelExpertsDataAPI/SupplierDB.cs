@@ -47,6 +47,7 @@ namespace TravelExpertsDataAPI
         /// <summary>
         /// Get a list of suppliers for the product
         /// </summary>
+        /// <author>Nate Penner</author>
         /// <param name="product">The product to lookup</param>
         /// <returns>A list of suppliers providing this product</returns>
         public static List<Supplier> GetSuppliers(Product product)
