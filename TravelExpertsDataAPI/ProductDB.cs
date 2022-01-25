@@ -20,6 +20,7 @@ namespace TravelExpertsDataAPI
         /// <summary>
         /// Get a list of all products from database
         /// </summary>
+        /// <author>Nate Penner</author>
         /// <returns>A list of products</returns>
         public static List<Product> GetProducts()
         {
@@ -74,6 +75,7 @@ namespace TravelExpertsDataAPI
         /// <summary>
         /// Add a new product to the database
         /// </summary>
+        /// <author>Nate Penner</author>
         /// <param name="product">The product data to add</param>
         public static void AddProduct(Product product)
         {
@@ -88,6 +90,7 @@ namespace TravelExpertsDataAPI
         /// <summary>
         /// A product to be updated in the database
         /// </summary>
+        /// <author>Nate Penner</author>
         /// <param name="product">The product to be updated</param>
         public static void UpdateProduct(Product product)
         {

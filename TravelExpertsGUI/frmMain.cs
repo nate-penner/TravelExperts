@@ -16,12 +16,6 @@ namespace TravelExpertsGUI
 {
     public partial class frmMain : Form
     {
-        // productKeyMap maps the ListBox indices to the ProductId from the database
-        Dictionary<int, int> productTabProductKeyMap = new Dictionary<int, int>();
-
-        // A list of all products in the database
-        List<Product> productTabProducts;
-
         public frmMain()
         {
             InitializeComponent();
@@ -37,9 +31,13 @@ namespace TravelExpertsGUI
             // End code block by Daniel Palmer
 
             // Product panel code
+            // Author: Nate Penner
             loadProductsTab();
         }
 
+
+        // Loads a list of products from the databaes into the Products tab
+        // Author: Nate Penner
         private void loadProductsTab()
         {
             lstProductTabProducts.DataSource = ProductDB.GetProducts()
@@ -61,16 +59,22 @@ namespace TravelExpertsGUI
             lstSupplierTabProducts.DisplayMember = "ProdName";
         }
 
+        // Handles the event when changing the product list selection
+        // Author: Nate Penner
         private void lstProductTabProducts_SelectedIndexChanged(object sender, EventArgs e)
         {
             // Get the Product from the listbox selection
             Product product = productTabGetProductSelection();
 
+            // Show the product ID
             txtProductTabProductID.Text = product.ProductId.ToString();
 
+            // Load the supplier for this product
             productTabLoadSuppliers(product);
         }
 
+        // Handles the Add product button click in the Products tab
+        // Author: Nate Penner
         private void btnProductTabAddProduct_Click(object sender, EventArgs e)
         {
             frmProducts productsForm = new frmProducts();
@@ -87,6 +91,8 @@ namespace TravelExpertsGUI
             }
         }
 
+        // Handles the Edit product button in the Products tab
+        // Author: Nate Penner
         private void btnProductTabEditProduct_Click(object sender, EventArgs e)
         {
             frmProducts productsForm = new frmProducts();
@@ -108,11 +114,15 @@ namespace TravelExpertsGUI
             }
         }
 
+        // Get the selected Product from the products list in the Product tab
+        // Author: Nate Penner
         private Product productTabGetProductSelection()
         {
             return (Product)lstProductTabProducts.SelectedItem;
         }
 
+        // Loads a list suppliers for the Product in the product tab
+        // Author: Nate Penner
         private void productTabLoadSuppliers(Product product)
         {
             // Get the list of suppliers for the selected product
@@ -120,7 +130,7 @@ namespace TravelExpertsGUI
                 .GetSuppliers(product)
                 .OrderBy(s => s.SupName).ToList();
 
-            // Clear the suppliers tab and load new data
+            // Display the supplier data in the list
             lstProductTabSuppliers.DataSource = suppliers;
             lstProductTabSuppliers.DisplayMember = "SupName";
 
