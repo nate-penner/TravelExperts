@@ -37,18 +37,16 @@ namespace TravelExpertsGUI
             // End code block by Daniel Palmer
 
             // Product panel code
-            int counter = 0;
-            productTabProducts = ProductDB.GetProducts()
-                .OrderBy(p => p.ProdName)
-                .ToList();
-            productTabProducts.ForEach( 
-                p => {
-                    lstProductTabProducts.Items.Add(p.ProdName);
-                    productTabProductKeyMap.Add(counter, p.ProductId);
-                    counter++;
-                }
-            );
+            loadProductsTab();
         }
+
+        private void loadProductsTab()
+        {
+            lstProductTabProducts.DataSource = ProductDB.GetProducts()
+                .OrderBy(p => p.ProdName).ToList();
+            lstProductTabProducts.DisplayMember = "ProdName";
+        }
+
         // Populates the tab with details about selected supplier Author: Daniel Palmer
         private void lstSupplierTabSuppliers_SelectedIndexChanged(object sender, EventArgs e)
                {
@@ -66,23 +64,68 @@ namespace TravelExpertsGUI
         private void lstProductTabProducts_SelectedIndexChanged(object sender, EventArgs e)
         {
             // Get the Product from the listbox selection
-            int selected = lstProductTabProducts.SelectedIndex;
-            txtProductTabProductID.Text = productTabProductKeyMap[selected].ToString();
-            Product product = productTabProducts
-                .Find(p => p.ProductId == productTabProductKeyMap[selected]);
+            Product product = productTabGetProductSelection();
 
+            txtProductTabProductID.Text = product.ProductId.ToString();
+
+            productTabLoadSuppliers(product);
+        }
+
+        private void btnProductTabAddProduct_Click(object sender, EventArgs e)
+        {
+            frmProducts productsForm = new frmProducts();
+            productsForm.IsAdd = true;
+
+            DialogResult result = productsForm.ShowDialog();
+
+            if (result == DialogResult.OK)
+            {
+                ProductDB.AddProduct(productsForm.SelectedProduct);
+            } else
+            {
+                // Show an error message
+            }
+        }
+
+        private void btnProductTabEditProduct_Click(object sender, EventArgs e)
+        {
+            frmProducts productsForm = new frmProducts();
+            productsForm.IsAdd = false;
+            productsForm.SelectedProduct = productTabGetProductSelection();
+
+            DialogResult result = productsForm.ShowDialog();
+
+            if (result == DialogResult.OK)
+            {
+                ProductSupplierDB.UpdateProductSuppliers(
+                    productsForm.SelectedProduct, productsForm.ProductSuppliers
+                    );
+                productTabLoadSuppliers(productsForm.SelectedProduct);
+            } else
+            {
+                // Show an error
+
+            }
+        }
+
+        private Product productTabGetProductSelection()
+        {
+            return (Product)lstProductTabProducts.SelectedItem;
+        }
+
+        private void productTabLoadSuppliers(Product product)
+        {
             // Get the list of suppliers for the selected product
             List<Supplier> suppliers = SupplierDB
                 .GetSuppliers(product)
                 .OrderBy(s => s.SupName).ToList();
 
             // Clear the suppliers tab and load new data
-            lstProductTabSuppliers.Items.Clear();
-            suppliers.ForEach(s => lstProductTabSuppliers.Items.Add(s.SupName));
+            lstProductTabSuppliers.DataSource = suppliers;
+            lstProductTabSuppliers.DisplayMember = "SupName";
 
             // Show suppliers count
             txtProductTabTotalSuppliers.Text = suppliers.Count.ToString();
         }
-
     }
 }

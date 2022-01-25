@@ -25,6 +25,50 @@ namespace TravelExpertsDataAPI
             // Update the products_suppliers table with a new entry
         }
 
+        public static void UpdateProductSuppliers(Product product, List<Supplier> suppliers)
+        {
+            using (TravelExpertsContext db = new TravelExpertsContext())
+            {
+                // Get all the current suppliers for the product (from the database)
+                List<int> savedSupplierIds = db.ProductsSuppliers
+                    .Join(db.Suppliers,
+                    ps => ps.SupplierId,
+                    s => s.SupplierId,
+                    (ps, s) => new { ps, s }
+                    ).Where(o => o.ps.ProductId == product.ProductId)
+                    .Select(o => o.s.SupplierId).ToList();
+
+                // Get the ids of all the suppliers in the new list for this product
+                List<int> supplierIds = suppliers.Select(s => s.SupplierId).ToList();
+
+                // Remove any product supplier records in the database for suppliers that
+                // are not in the passed supplier list
+                savedSupplierIds.ForEach(s =>
+                {
+                    if (!supplierIds.Contains(s)) {
+                        ProductsSupplier ps = db.ProductsSuppliers
+                        .Where(ps => ps.SupplierId == s && ps.ProductId == product.ProductId)
+                        .Single();
+                        db.ProductsSuppliers.Remove(ps);
+                    }
+                });
+                db.SaveChanges();
+
+                // Add any product suppliers that are in the new list, but weren't in the database
+                supplierIds.ForEach(s =>
+                {
+                    if (!savedSupplierIds.Contains(s))
+                    {
+                        ProductsSupplier ps = new ProductsSupplier();
+                        ps.ProductId = product.ProductId;
+                        ps.SupplierId = s;
+                        db.ProductsSuppliers.Add(ps);
+                    }
+                });
+                db.SaveChanges();
+            }
+        }
+
         /// <summary>
         /// Removes a product/supplier relationship
         /// </summary>

@@ -34,7 +34,7 @@ namespace TravelExpertsGUI
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.lblProductTabSupplierCount = new System.Windows.Forms.Label();
-            this.lblProductTabProduntId = new System.Windows.Forms.Label();
+            this.lblProductTabProductId = new System.Windows.Forms.Label();
             this.lblProductTabSuppliers = new System.Windows.Forms.Label();
             this.lblProductTabProducts = new System.Windows.Forms.Label();
             this.txtProductTabTotalSuppliers = new System.Windows.Forms.TextBox();
@@ -84,7 +84,7 @@ namespace TravelExpertsGUI
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.lblProductTabSupplierCount);
-            this.tabPage2.Controls.Add(this.lblProductTabProduntId);
+            this.tabPage2.Controls.Add(this.lblProductTabProductId);
             this.tabPage2.Controls.Add(this.lblProductTabSuppliers);
             this.tabPage2.Controls.Add(this.lblProductTabProducts);
             this.tabPage2.Controls.Add(this.txtProductTabTotalSuppliers);
@@ -110,14 +110,14 @@ namespace TravelExpertsGUI
             this.lblProductTabSupplierCount.TabIndex = 13;
             this.lblProductTabSupplierCount.Text = "Total Suppliers: ";
             // 
-            // lblProductTabProduntId
+            // lblProductTabProductId
             // 
-            this.lblProductTabProduntId.AutoSize = true;
-            this.lblProductTabProduntId.Location = new System.Drawing.Point(80, 195);
-            this.lblProductTabProduntId.Name = "lblProductTabProduntId";
-            this.lblProductTabProduntId.Size = new System.Drawing.Size(62, 15);
-            this.lblProductTabProduntId.TabIndex = 12;
-            this.lblProductTabProduntId.Text = "ProductId:";
+            this.lblProductTabProductId.AutoSize = true;
+            this.lblProductTabProductId.Location = new System.Drawing.Point(80, 195);
+            this.lblProductTabProductId.Name = "lblProductTabProductId";
+            this.lblProductTabProductId.Size = new System.Drawing.Size(66, 15);
+            this.lblProductTabProductId.TabIndex = 12;
+            this.lblProductTabProductId.Text = "Product ID:";
             // 
             // lblProductTabSuppliers
             // 
@@ -172,6 +172,7 @@ namespace TravelExpertsGUI
             this.btnProductTabEditProduct.TabIndex = 3;
             this.btnProductTabEditProduct.Text = "Edit";
             this.btnProductTabEditProduct.UseVisualStyleBackColor = true;
+            this.btnProductTabEditProduct.Click += new System.EventHandler(this.btnProductTabEditProduct_Click);
             // 
             // btnProductTabAddProduct
             // 
@@ -181,6 +182,7 @@ namespace TravelExpertsGUI
             this.btnProductTabAddProduct.TabIndex = 2;
             this.btnProductTabAddProduct.Text = "Add";
             this.btnProductTabAddProduct.UseVisualStyleBackColor = true;
+            this.btnProductTabAddProduct.Click += new System.EventHandler(this.btnProductTabAddProduct_Click);
             // 
             // lstProductTabProducts
             // 
@@ -349,7 +351,7 @@ namespace TravelExpertsGUI
         private System.Windows.Forms.TextBox txtSupplierTabSupplierId;
         private System.Windows.Forms.ListBox lstSupplierTabProducts;
         private System.Windows.Forms.Label lblProductTabSupplierCount;
-        private System.Windows.Forms.Label lblProductTabProduntId;
+        private System.Windows.Forms.Label lblProductTabProductId;
         private System.Windows.Forms.Label lblProductTabSuppliers;
         private System.Windows.Forms.Label lblProductTabProducts;
     }
