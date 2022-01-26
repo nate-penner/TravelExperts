@@ -34,11 +34,11 @@ namespace TravelExpertsDataAPI
             var state = db.Entry(product).State;
             if (state == EntityState.Detached) // record was deleted
             {
-
+                string message = "Another user has deleted this customer";
             }
             else // it was updated
             {
-
+                string message = "Another user updated this customer. Try again.";
             }
         }
         // Method for handling Concurrency Errors, overload for supplier

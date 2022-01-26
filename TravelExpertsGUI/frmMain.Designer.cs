@@ -221,6 +221,7 @@ namespace TravelExpertsGUI
             this.btnSupplierTabModify.TabIndex = 9;
             this.btnSupplierTabModify.Text = "Modify";
             this.btnSupplierTabModify.UseVisualStyleBackColor = true;
+            this.btnSupplierTabModify.Click += new System.EventHandler(this.btnSupplierTabModify_Click);
             // 
             // btnSupplierTabAdd
             // 
@@ -230,6 +231,7 @@ namespace TravelExpertsGUI
             this.btnSupplierTabAdd.TabIndex = 8;
             this.btnSupplierTabAdd.Text = "Add";
             this.btnSupplierTabAdd.UseVisualStyleBackColor = true;
+            this.btnSupplierTabAdd.Click += new System.EventHandler(this.btnSupplierTabAdd_Click);
             // 
             // lblSupplierTabProductId
             // 

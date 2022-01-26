@@ -44,20 +44,27 @@ namespace TravelExpertsDataAPI
         public static List<Product> GetProducts(Supplier supplier)
         {
             List<Product> products = null;
-
-            using (TravelExpertsContext db = new TravelExpertsContext())
+            try
             {
-                products = db.ProductsSuppliers.Join(
-                                                     db.Products, 
-                                                     p => p.ProductId, 
-                                                     ps => ps.ProductId, 
-                                                     (ps, p) => new { p, ps })
-                                                .Where(o => o.ps.SupplierId == supplier.SupplierId)
-                                                .Select(o => o.p)
-                                                .ToList();
-            }
+                using (TravelExpertsContext db = new TravelExpertsContext())
+                {
+                    products = db.ProductsSuppliers.Join(
+                                                         db.Products,
+                                                         p => p.ProductId,
+                                                         ps => ps.ProductId,
+                                                         (ps, p) => new { p, ps })
+                                                    .Where(o => o.ps.SupplierId == supplier.SupplierId)
+                                                    .Select(o => o.p)
+                                                    .ToList();
+                }
 
-            return products;
+                return products;
+            }
+            catch (DbUpdateException ex)
+            {
+                Handles.HandleDbUpdateException(ex);
+                return products;
+            }
         }
 
         /// <summary>

@@ -74,10 +74,29 @@ namespace TravelExpertsDataAPI
         /// <summary>
         /// Adds a new supplier to the database
         /// </summary>
+        /// <author>Daniel Palmer</author>
         /// <param name="supplier">The supplier to be added</param>
         public static void AddSupplier(Supplier supplier)
         {
-            // add the supplier to the database
+            using (TravelExpertsContext db = new TravelExpertsContext())
+            {
+                try
+                {
+
+                    db.Suppliers.Add(supplier);
+                    db.SaveChanges();
+
+                }
+                catch (DbUpdateConcurrencyException ex) // concurrency error
+                {
+                    Handles.HandleConcurrencyError(ex, db, supplier);
+                }
+                catch (DbUpdateException ex)
+                {
+                    Handles.HandleDbUpdateException(ex);
+                }
+            }
+
         }
 
         /// <summary>
@@ -86,7 +105,25 @@ namespace TravelExpertsDataAPI
         /// <param name="supplier">The updated supplier data</param>
         public static void UpdateSupplier(Supplier supplier)
         {
-            // Update the supplier information in the database
+
+            using (TravelExpertsContext db = new TravelExpertsContext())
+            {
+                try
+                {
+                    Supplier dbSupplier = db.Suppliers.Find(supplier.SupplierId);
+                    dbSupplier.SupName = supplier.SupName;
+                    db.SaveChanges();
+                }
+                catch (DbUpdateConcurrencyException ex) // concurrency error
+                {
+                    Handles.HandleConcurrencyError(ex, db, supplier);
+                }
+                catch (DbUpdateException ex)
+                {
+                    Handles.HandleDbUpdateException(ex);
+                }
+
+            }
         }
     }
 }

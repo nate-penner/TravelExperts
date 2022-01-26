@@ -8,7 +8,7 @@ using TravelExpertsDataAPI;
 
 /* A GUI design to allow for easy database management and interaction
  * Form serves as home page for application, allowing user to cycle through various pages to view particular data
- * Authors: Nate Penner, Daniel Palmer, alex Cress
+ * Authors: Nate Penner, Daniel Palmer, Alex Cress
  * 2022-01-17
  */
 
@@ -16,19 +16,14 @@ namespace TravelExpertsGUI
 {
     public partial class frmMain : Form
     {
+        Supplier supplier;
         public frmMain()
         {
             InitializeComponent();
         }
         private void frmMain_Load(object sender, EventArgs e)
-        {   
-            // The following code block was writen by Daniel Palmer
-            // Sets up the supplier tab form controls
-            List<Supplier> SupplierTabSuppliers = TravelExpertsDataAPI.SupplierDB.GetSuppliers();
-            // Fills the supplier listbox with all suppliers
-            lstSupplierTabSuppliers.DataSource = SupplierTabSuppliers;
-            lstSupplierTabSuppliers.DisplayMember = "SupName";
-            // End code block by Daniel Palmer
+        {
+            SupplierTabRenderList();
 
             // Product panel code
             // Author: Nate Penner
@@ -45,18 +40,38 @@ namespace TravelExpertsGUI
             lstProductTabProducts.DisplayMember = "ProdName";
         }
 
-        // Populates the tab with details about selected supplier Author: Daniel Palmer
+        // Renders the product list on the SupplierTab
+        // Author: Daniel Palmer
+        private void SupplierTabRenderList()
+        {
+            // Sets up the supplier tab form controls
+            List<Supplier> SupplierTabSuppliers = TravelExpertsDataAPI.SupplierDB.GetSuppliers();
+            // Fills the supplier listbox with all suppliers, clearing it before loading
+            lstSupplierTabSuppliers.DataSource = null;
+            lstSupplierTabSuppliers.DataSource = SupplierTabSuppliers;
+            lstSupplierTabSuppliers.DisplayMember = "SupName";
+        }
+
+        // Populates the tab with details about selected supplier
+        // Author: Daniel Palmer
         private void lstSupplierTabSuppliers_SelectedIndexChanged(object sender, EventArgs e)
                {
-            // Establishes the selected supplier and collects all products the supplier offers
-            Supplier supplier = (Supplier)lstSupplierTabSuppliers.SelectedValue;
-            List<Product> product = TravelExpertsDataAPI.ProductDB.GetProducts(supplier);
+            // Makes sure there is an index selected in list
+            if (lstSupplierTabSuppliers.SelectedValue != null)
+            {
+                // Establishes the selected supplier and collects all products the supplier offers
+                supplier = (Supplier)lstSupplierTabSuppliers.SelectedValue;
 
-            // Displays all the supplier and product values to the form
-            txtSupplierTabSupplierId.Text = supplier.SupplierId.ToString();
-            txtSupplierTabProductCount.Text = product.Count().ToString();
-            lstSupplierTabProducts.DataSource = product;
-            lstSupplierTabProducts.DisplayMember = "ProdName";
+                List<Product> product = TravelExpertsDataAPI.ProductDB.GetProducts(supplier);
+
+                // Displays all the supplier and product values to the form
+                txtSupplierTabSupplierId.Text = supplier.SupplierId.ToString();
+                txtSupplierTabProductCount.Text = product.Count().ToString();
+                lstSupplierTabProducts.DataSource = product;
+                lstSupplierTabProducts.DisplayMember = "ProdName";
+            }
+
+
         }
 
         // Handles the event when changing the product list selection
@@ -136,6 +151,53 @@ namespace TravelExpertsGUI
 
             // Show suppliers count
             txtProductTabTotalSuppliers.Text = suppliers.Count.ToString();
+        }
+
+        // Implements the SupplierTabAdd on click method, opens the add/modify form in add mode
+        // Author: Daniel Palmer
+        private void btnSupplierTabAdd_Click(object sender, EventArgs e)
+        {
+            frmAddModifySuppliers AddForm = new frmAddModifySuppliers();
+            AddForm.IsAdd = true;
+            AddForm.CurrentSupplier = new Supplier();
+
+            DialogResult result = AddForm.ShowDialog();
+
+            if(result == DialogResult.OK)
+            {
+                // Grabs the Supplier and product created by the form
+                Supplier CurrentSupplier = AddForm.CurrentSupplier;
+                List<Product> AddedProducts = AddForm.AddedProducts;
+                SupplierDB.AddSupplier(CurrentSupplier);
+
+                // Loop over all products in the generated product list, and add them with the supplier to the ProductsSupplier Table
+                foreach (Product prod in AddedProducts)
+                {
+                    ProductSupplierDB.AddProductSupplier(prod, CurrentSupplier);
+                }
+                //Re-renders the list
+                SupplierTabRenderList();
+            }
+        }
+
+        // Implements the SupplierTabModify on click method, opens the add/modify form in modify mode
+        // Author: Daniel Palmer
+        private void btnSupplierTabModify_Click(object sender, EventArgs e)
+        {
+            frmAddModifySuppliers ModifyForm = new frmAddModifySuppliers();
+            ModifyForm.IsAdd = false;
+            ModifyForm.CurrentSupplier = (Supplier)lstSupplierTabSuppliers.SelectedValue;
+
+            DialogResult result = ModifyForm.ShowDialog();
+
+            if (result == DialogResult.OK) 
+            {   
+                // Grabs all changes to the supplier data and updates the table
+                Supplier CurrentSupplier = ModifyForm.CurrentSupplier;
+                SupplierDB.UpdateSupplier(CurrentSupplier);
+            }
+            //Re-renders the list
+            SupplierTabRenderList();
         }
     }
 }
