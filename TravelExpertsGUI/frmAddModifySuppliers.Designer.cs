@@ -39,12 +39,13 @@ namespace TravelExpertsGUI
             this.lstAddedProducts = new System.Windows.Forms.ListBox();
             this.btnAddProduct = new System.Windows.Forms.Button();
             this.btnRemoveProduct = new System.Windows.Forms.Button();
+            this.lblWarning = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // lblSupplierId
             // 
             this.lblSupplierId.AutoSize = true;
-            this.lblSupplierId.Location = new System.Drawing.Point(71, 61);
+            this.lblSupplierId.Location = new System.Drawing.Point(48, 58);
             this.lblSupplierId.Name = "lblSupplierId";
             this.lblSupplierId.Size = new System.Drawing.Size(66, 15);
             this.lblSupplierId.TabIndex = 0;
@@ -53,7 +54,7 @@ namespace TravelExpertsGUI
             // lblSupplierName
             // 
             this.lblSupplierName.AutoSize = true;
-            this.lblSupplierName.Location = new System.Drawing.Point(71, 128);
+            this.lblSupplierName.Location = new System.Drawing.Point(26, 128);
             this.lblSupplierName.Name = "lblSupplierName";
             this.lblSupplierName.Size = new System.Drawing.Size(88, 15);
             this.lblSupplierName.TabIndex = 1;
@@ -61,16 +62,16 @@ namespace TravelExpertsGUI
             // 
             // txtSupplierId
             // 
-            this.txtSupplierId.Location = new System.Drawing.Point(165, 58);
+            this.txtSupplierId.Location = new System.Drawing.Point(120, 55);
             this.txtSupplierId.Name = "txtSupplierId";
-            this.txtSupplierId.Size = new System.Drawing.Size(100, 23);
+            this.txtSupplierId.Size = new System.Drawing.Size(198, 23);
             this.txtSupplierId.TabIndex = 2;
             // 
             // txtSupplierName
             // 
-            this.txtSupplierName.Location = new System.Drawing.Point(165, 125);
+            this.txtSupplierName.Location = new System.Drawing.Point(120, 125);
             this.txtSupplierName.Name = "txtSupplierName";
-            this.txtSupplierName.Size = new System.Drawing.Size(100, 23);
+            this.txtSupplierName.Size = new System.Drawing.Size(198, 23);
             this.txtSupplierName.TabIndex = 3;
             // 
             // lstProducts
@@ -100,6 +101,7 @@ namespace TravelExpertsGUI
             this.btnCancel.TabIndex = 6;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
+            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
             // lstAddedProducts
             // 
@@ -130,11 +132,22 @@ namespace TravelExpertsGUI
             this.btnRemoveProduct.UseVisualStyleBackColor = true;
             this.btnRemoveProduct.Click += new System.EventHandler(this.btnRemoveProduct_Click);
             // 
+            // lblWarning
+            // 
+            this.lblWarning.AutoSize = true;
+            this.lblWarning.ForeColor = System.Drawing.Color.Red;
+            this.lblWarning.Location = new System.Drawing.Point(417, 161);
+            this.lblWarning.Name = "lblWarning";
+            this.lblWarning.Size = new System.Drawing.Size(245, 15);
+            this.lblWarning.TabIndex = 10;
+            this.lblWarning.Text = "Modify Supplier products under products tab";
+            // 
             // frmAddModifySuppliers
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.lblWarning);
             this.Controls.Add(this.btnRemoveProduct);
             this.Controls.Add(this.btnAddProduct);
             this.Controls.Add(this.lstAddedProducts);
@@ -165,5 +178,6 @@ namespace TravelExpertsGUI
         private System.Windows.Forms.ListBox lstAddedProducts;
         private System.Windows.Forms.Button btnAddProduct;
         private System.Windows.Forms.Button btnRemoveProduct;
+        private System.Windows.Forms.Label lblWarning;
     }
 }

@@ -23,6 +23,15 @@ namespace TravelExpertsDataAPI
         public static void AddProductSupplier(Product product, Supplier supplier)
         {
             // Update the products_suppliers table with a new entry
+            ProductsSupplier productSupplier = new ProductsSupplier();
+            productSupplier.ProductId = product.ProductId;
+            productSupplier.SupplierId = supplier.SupplierId;
+            using (TravelExpertsContext db = new TravelExpertsContext())
+            {
+                db.ProductsSuppliers.Add(productSupplier);
+                db.SaveChanges();
+            }
+
         }
 
         public static void UpdateProductSuppliers(Product product, List<Supplier> suppliers)
