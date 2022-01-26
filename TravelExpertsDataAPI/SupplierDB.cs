@@ -80,9 +80,23 @@ namespace TravelExpertsDataAPI
         {
             using (TravelExpertsContext db = new TravelExpertsContext())
             {
-                db.Suppliers.Add(supplier);
-                db.SaveChanges();
+                try
+                {
+
+                    db.Suppliers.Add(supplier);
+                    db.SaveChanges();
+
+                }
+                catch (DbUpdateConcurrencyException ex) // concurrency error
+                {
+                    Handles.HandleConcurrencyError(ex, db, supplier);
+                }
+                catch (DbUpdateException ex)
+                {
+                    Handles.HandleDbUpdateException(ex);
+                }
             }
+
         }
 
         /// <summary>
@@ -91,11 +105,24 @@ namespace TravelExpertsDataAPI
         /// <param name="supplier">The updated supplier data</param>
         public static void UpdateSupplier(Supplier supplier)
         {
+
             using (TravelExpertsContext db = new TravelExpertsContext())
             {
-                Supplier dbSupplier = db.Suppliers.Find(supplier.SupplierId);
-                dbSupplier.SupName = supplier.SupName;
-                db.SaveChanges();
+                try
+                {
+                    Supplier dbSupplier = db.Suppliers.Find(supplier.SupplierId);
+                    dbSupplier.SupName = supplier.SupName;
+                    db.SaveChanges();
+                }
+                catch (DbUpdateConcurrencyException ex) // concurrency error
+                {
+                    Handles.HandleConcurrencyError(ex, db, supplier);
+                }
+                catch (DbUpdateException ex)
+                {
+                    Handles.HandleDbUpdateException(ex);
+                }
+
             }
         }
     }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,20 +19,28 @@ namespace TravelExpertsDataAPI
         /// <summary>
         /// Add a new product/supplier relationship
         /// </summary>
+        /// <author>Daniel Palmer</author>
         /// <param name="supplier">The supplier</param>
         /// <param name="product">The product</param>
         public static void AddProductSupplier(Product product, Supplier supplier)
         {
             // Update the products_suppliers table with a new entry
+            // Creates an instance of ProductsSupplier and assigns the Product and supplier Ids
             ProductsSupplier productSupplier = new ProductsSupplier();
             productSupplier.ProductId = product.ProductId;
             productSupplier.SupplierId = supplier.SupplierId;
-            using (TravelExpertsContext db = new TravelExpertsContext())
+            try
             {
-                db.ProductsSuppliers.Add(productSupplier);
-                db.SaveChanges();
+                using (TravelExpertsContext db = new TravelExpertsContext())
+                {
+                    db.ProductsSuppliers.Add(productSupplier);
+                    db.SaveChanges();
+                }
             }
-
+            catch (DbUpdateException ex)
+            {
+                Handles.HandleDbUpdateException(ex);
+            }
         }
 
         public static void UpdateProductSuppliers(Product product, List<Supplier> suppliers)

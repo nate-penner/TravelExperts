@@ -66,13 +66,16 @@ namespace TravelExpertsGUI
             this.txtSupplierId.Name = "txtSupplierId";
             this.txtSupplierId.Size = new System.Drawing.Size(198, 23);
             this.txtSupplierId.TabIndex = 2;
+            this.txtSupplierId.Tag = "SupplierID";
             // 
             // txtSupplierName
             // 
             this.txtSupplierName.Location = new System.Drawing.Point(120, 125);
+            this.txtSupplierName.MaxLength = 255;
             this.txtSupplierName.Name = "txtSupplierName";
             this.txtSupplierName.Size = new System.Drawing.Size(198, 23);
             this.txtSupplierName.TabIndex = 3;
+            this.txtSupplierName.Tag = "SupplierName";
             // 
             // lstProducts
             // 

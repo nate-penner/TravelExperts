@@ -60,8 +60,9 @@ namespace TravelExpertsDataAPI
 
                 return products;
             }
-            catch (NullReferenceException ex)
+            catch (DbUpdateException ex)
             {
+                Handles.HandleDbUpdateException(ex);
                 return products;
             }
         }

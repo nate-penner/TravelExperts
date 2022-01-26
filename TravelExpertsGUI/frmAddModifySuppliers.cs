@@ -65,7 +65,10 @@ namespace TravelExpertsGUI
         // Author: Daniel Palmer 
         private void btnOk_Click(object sender, EventArgs e)
         {
-            if (CheckSupplierId(Convert.ToInt32(txtSupplierId.Text)))
+            TextBox[] tbs = { txtSupplierId, txtSupplierName };
+            if (Validator.IsPresent(tbs) &&
+                Validator.IsInt(txtSupplierId) &&
+                CheckSupplierId(Convert.ToInt32(txtSupplierId.Text)))
             {
                 CurrentSupplier.SupName = txtSupplierName.Text;
                 CurrentSupplier.SupplierId = Convert.ToInt32(txtSupplierId.Text);
