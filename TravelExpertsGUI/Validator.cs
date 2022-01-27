@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using TravelExpertsData;
 
 /*
  * A class for validation, provides methods for validating form controls
@@ -175,5 +176,49 @@ namespace TravelExpertsGUI
             }
         }
 
+        /// <summary>
+        /// validates if text box contains non-negative decimal value
+        /// </summary>
+        /// <param name="tb">text box to validate</param>
+        /// <returns>true if valid and false if not</returns>
+        public static bool IsNonNegativeDecimal(TextBox tb)
+        {
+            bool isValid = true;
+            decimal result; // for TryParse
+            if (!Decimal.TryParse(tb.Text, out result)) // TryParse returned false
+            {
+                isValid = false;
+                MessageBox.Show(tb.Tag + " must be a number");
+                tb.SelectAll(); // select all content for replacement
+                tb.Focus();
+            }
+            else // it's decimal value, but could be negative
+            {
+                if (result < 0)
+                {
+                    isValid = false;
+                    MessageBox.Show(tb.Tag + " must be positive or zero");
+                    tb.SelectAll(); // select all content for replacement
+                    tb.Focus();
+                }
+            }
+            return isValid;
+        }
+
+        /// <summary>
+        /// Contains all business logic for a Package
+        /// </summary>
+        /// <param name="package"></param>
+        /// <returns></returns>
+        public static bool IsValidPackage(Package package)
+        {
+            //TODO Check docs/implement all business-level requirements
+            if(DateTime.Compare((DateTime) package.PkgStartDate, (DateTime) package.PkgEndDate) >= 0)//Start date is not before end date
+            {
+                MessageBox.Show("State date must be before end date!");
+                return false;
+            }
+            return true;
+        }
     }
 }

@@ -28,6 +28,9 @@ namespace TravelExpertsGUI
             // Product panel code
             // Author: Nate Penner
             loadProductsTab();
+
+            //Load package panel
+            PackageTabRenderPackageList();
         }
 
 
@@ -50,6 +53,19 @@ namespace TravelExpertsGUI
             lstSupplierTabSuppliers.DataSource = null;
             lstSupplierTabSuppliers.DataSource = SupplierTabSuppliers;
             lstSupplierTabSuppliers.DisplayMember = "SupName";
+        }
+
+        /// <summary>
+        /// Loads the package list with all packages
+        /// Author: Alex Cress
+        /// </summary>
+        private void PackageTabRenderPackageList()
+        {
+            //Get ADO table
+            List<Package> packages = TravelExpertsDataAPI.PackageDB.GetPackages();
+            //Render table
+            lstPackageTabPackages.DataSource = packages;
+            lstPackageTabPackages.DisplayMember = "PkgName";
         }
 
         // Populates the tab with details about selected supplier
@@ -198,6 +214,115 @@ namespace TravelExpertsGUI
             }
             //Re-renders the list
             SupplierTabRenderList();
+        }
+
+        /// <summary>
+        /// Opens a form to accept user input for a new Package. If valid, the new Package will be saved to the database.
+        /// Author: Alex Cress
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnPackageTabAddPackage_Click(object sender, EventArgs e)
+        {
+            //Get input from user
+            frmAddModifyPackage inputForm = new frmAddModifyPackage(FORM_ACTION.CREATE);
+            DialogResult result = inputForm.ShowDialog();
+
+            //All input is valid and the user wishes to add a new product
+            if (result == DialogResult.OK)
+            {
+                //Update DB
+                try 
+                {
+                    PackageDB.AddPackage(inputForm.package);
+                }
+                //TODO Alex- more specific error handling
+                catch(Exception ex)
+                {
+                    MessageBox.Show($"Error while adding new Package to the database: {ex.Message}", "Database Error");
+                }
+                
+                //Refresh table
+                PackageTabRenderPackageList();
+            }
+        }
+
+        /// <summary>
+        /// Opens a form to accept user input for modifying an existing Package. If valid, the modifications will be saved to the database.
+        /// Author: Alex Cress
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnPackageTabEditPackage_Click(object sender, EventArgs e)
+        {
+            //Check if a row is selected (should always be selected by default)           
+            if (lstPackageTabPackages.SelectedItem == null)
+            {
+                MessageBox.Show("Please select a Package from the list to modify.");
+                return;
+            }
+
+            //Get the selected Package from the table
+            Package selectedPackage = (Package) lstPackageTabPackages.SelectedItem;
+
+            //Populate/show form
+            frmAddModifyPackage inputForm = new frmAddModifyPackage(FORM_ACTION.UPDATE);
+            inputForm.package = selectedPackage;
+            DialogResult result = inputForm.ShowDialog();
+
+            //If all input is valid and the user wishes to save their changes
+            if (result == DialogResult.OK)
+            {
+                try
+                {
+                    PackageDB.UpdatePackage(inputForm.package);
+                }
+                //TODO Alex- more specific error handling
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error while modifying PackageId {inputForm.package.PackageId}: {ex.Message}", "Database Error");
+                }
+            }
+        }
+
+        private void btnPackageTabDeletePackage_Click(object sender, EventArgs e)
+        {
+            //Check if a row is selected (should always be selected by default)           
+            if (lstPackageTabPackages.SelectedItem == null)
+            {
+                MessageBox.Show("Please select a Package from the list to modify.");
+                return;
+            }
+
+            //Get the selected Package from the table
+            Package selectedPackage = (Package) lstPackageTabPackages.SelectedItem; 
+
+            //Confirm that the user wants to delete
+            DialogResult answer = MessageBox.Show($"Do you want to delete {selectedPackage.PkgName}?",
+                "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            //Delete the Product
+            if (answer == DialogResult.Yes)
+            {
+                using (TravelExpertsContext db = new TravelExpertsContext())
+                {
+                    try
+                    {
+                        //Get ADO reference
+                        selectedPackage = db.Packages.Find(selectedPackage.PackageId);
+                        //Delete from database
+                        db.Packages.Remove(selectedPackage);
+                        db.SaveChanges();
+                        //Refresh table
+                        PackageTabRenderPackageList();
+                    }
+                    //TODO Alex- more specific error handling
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Error while deleting Package {selectedPackage.PkgName}: " + ex.Message, ex.GetType().ToString());
+                    }
+                }
+            }
         }
     }
 }
