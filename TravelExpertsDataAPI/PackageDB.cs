@@ -16,6 +16,10 @@ namespace TravelExpertsDataAPI
     */
     public static class PackageDB
     {
+        /// <summary>
+        /// Gets all rows from the Package table.
+        /// </summary>
+        /// <returns>a list of all Packages</returns>
         public static List<Package> GetPackages()
         {
             List<Package> packages = null;
@@ -44,16 +48,51 @@ namespace TravelExpertsDataAPI
         /// <param name="package">The package data to add</param>
         public static void AddPackage(Package package)
         {
-            // Add the package to the db
+            try
+            {
+                using (TravelExpertsContext db = new TravelExpertsContext())
+                {
+                    db.Packages.Add(package);
+                    db.SaveChanges();
+                }                          
+            }
+            catch(Exception)
+            {
+                //Throw exception to caller, allow for more specific error handling
+                throw;
+            }
+
         }
 
         /// <summary>
         /// Updates an existing package
         /// </summary>
         /// <param name="package">The updated package data</param>
-        public static void UpdatePackage(Package package)
+        public static void UpdatePackage(Package newPackage)
         {
-            // Update the package in the db
+            using (TravelExpertsContext db = new TravelExpertsContext())
+            {
+                try
+                {
+                    //Get ADO reference
+                    Package oldPackage = db.Packages.Find(newPackage.PackageId);
+
+                    //Update object properties
+                    oldPackage.PkgName = newPackage.PkgName;
+                    oldPackage.PkgDesc = newPackage.PkgDesc;
+                    oldPackage.PkgStartDate = newPackage.PkgStartDate;
+                    oldPackage.PkgEndDate = newPackage.PkgEndDate;
+                    oldPackage.PkgBasePrice = newPackage.PkgBasePrice;
+                    oldPackage.PkgAgencyCommission = newPackage.PkgAgencyCommission;
+
+                    db.SaveChanges();
+                }
+                catch (Exception)
+                {
+                    //Throw exception to caller, allow for more specific error handling
+                    throw;
+                }
+            }
         }
 
         /// <summary>
