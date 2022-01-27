@@ -161,7 +161,16 @@ namespace TravelExpertsGUI
         // Save this data and close the form
         private void btnSave_Click(object sender, EventArgs e)
         {
-            this.DialogResult = DialogResult.OK;
+            if (txtProductName.Text != "")
+            {
+                SelectedProduct.ProdName = txtProductName.Text;
+                this.DialogResult = DialogResult.OK;
+            } else
+            {
+                MessageBox.Show("Please enter a product name!", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                txtProductName.Focus();
+            }
         }
     }
 }

@@ -44,8 +44,17 @@ namespace TravelExpertsDataAPI
             }
         }
 
-        public static void UpdateProductSuppliers(Product product, List<Supplier> suppliers)
+        /// <summary>
+        /// Updates the relationship in the database between the product passed and the
+        /// suppliers providing that product.
+        /// </summary>
+        /// <author>Nate Penner</author>
+        /// <param name="product">The product to be updated</param>
+        /// <param name="suppliers">The new supplier list</param>
+        public static List<string> UpdateProductSuppliers(Product product, List<Supplier> suppliers)
         {
+            List<string> packageNames = null;
+
             using (TravelExpertsContext db = new TravelExpertsContext())
             {
                 // Get all the current suppliers for the product (from the database)
@@ -68,7 +77,31 @@ namespace TravelExpertsDataAPI
                         ProductsSupplier ps = db.ProductsSuppliers
                         .Where(ps => ps.SupplierId == s && ps.ProductId == product.ProductId)
                         .Single();
-                        db.ProductsSuppliers.Remove(ps);
+
+                        List<int> ppsIds = db.PackagesProductsSuppliers
+                        .Where(pps => pps.ProductSupplierId == ps.ProductSupplierId)
+                        .Select(pps => pps.ProductSupplierId).ToList();
+
+                        if (ppsIds.Contains(ps.ProductSupplierId))
+                        {
+                            // A package is using this product supplier
+                            // Don't remove it, add the packages using it
+                            // to the packageNames list
+                            if (packageNames == null)
+                                packageNames = new List<string>();
+
+                            db.Packages
+                            .Join(db.PackagesProductsSuppliers,
+                            p => p.PackageId,
+                            pps => pps.PackageId,
+                            (p, pps) => new { p.PkgName, pps.ProductSupplierId })
+                            .Where(o => o.ProductSupplierId == ps.ProductSupplierId)
+                            .Select(o => o.PkgName).ToList()
+                            .ForEach(s => packageNames.Add(s));
+                        } else
+                        {
+                            db.ProductsSuppliers.Remove(ps);
+                        }
                     }
                 });
                 db.SaveChanges();
@@ -86,6 +119,8 @@ namespace TravelExpertsDataAPI
                 });
                 db.SaveChanges();
             }
+
+            return packageNames;
         }
 
         /// <summary>

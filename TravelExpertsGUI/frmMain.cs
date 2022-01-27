@@ -127,12 +127,24 @@ namespace TravelExpertsGUI
 
             if (result == DialogResult.OK)
             {
-                ProductSupplierDB.UpdateProductSuppliers(
+                List<String> packageNames = ProductSupplierDB.UpdateProductSuppliers(
                     productsForm.SelectedProduct, productsForm.ProductSuppliers
                     );
+                ProductDB.UpdateProduct(productsForm.SelectedProduct);
+
+                if (packageNames != null)
+                {
+
+                    MessageBox.Show("The following packages blocked some deletions: " +
+                        $"{string.Join(", ", packageNames.ToArray())}");
+                }
+
                 productTabLoadSuppliers(productsForm.SelectedProduct);
-            }
-            else
+
+                int selectedIndex = lstProductTabProducts.SelectedIndex;
+                loadProductsTab();
+                lstProductTabProducts.SelectedIndex = selectedIndex;
+            } else
             {
                 // Show an error
 
