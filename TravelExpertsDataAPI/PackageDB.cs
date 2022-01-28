@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -35,7 +36,7 @@ namespace TravelExpertsDataAPI
                 }
                 catch (Exception ex)
                 {
-
+                    Handles.LogToDebug(ex);
                 }
             }
 
@@ -56,18 +57,22 @@ namespace TravelExpertsDataAPI
                     db.SaveChanges();
                 }                          
             }
-            catch(Exception)
+            catch(DbUpdateException ex)
             {
-                //Throw exception to caller, allow for more specific error handling
-                throw;
+                Handles.HandleDbUpdateException(ex);
+            }
+            catch(Exception ex)
+            {
+                Handles.LogToDebug(ex);
             }
 
         }
 
+        // Author: Alex Cress
         /// <summary>
-        /// Updates an existing package
+        /// Updates an existing package.
         /// </summary>
-        /// <param name="package">The updated package data</param>
+        /// <param name="package">The package data to update</param>
         public static void UpdatePackage(Package newPackage)
         {
             using (TravelExpertsContext db = new TravelExpertsContext())
@@ -87,21 +92,116 @@ namespace TravelExpertsDataAPI
 
                     db.SaveChanges();
                 }
-                catch (Exception)
+                catch (DbUpdateException ex)
                 {
-                    //Throw exception to caller, allow for more specific error handling
-                    throw;
+                    Handles.HandleDbUpdateException(ex);
+                }
+                catch (Exception ex)
+                {
+                    Handles.LogToDebug(ex);
                 }
             }
         }
-
+        // Author: Alex Cress
         /// <summary>
-        /// Removes an existing package
+        /// Removes an existing package.
         /// </summary>
         /// <param name="package">The package to be removed</param>
         public static void RemovePackage(Package package)
         {
-            throw new NotImplementedException();
+            using (TravelExpertsContext db = new TravelExpertsContext())
+            {
+                try
+                {
+                    //Get ADO references
+                    package = db.Packages.Find(package.PackageId);
+                    List<PackagesProductsSupplier> pps = db.PackagesProductsSuppliers
+                                                            .Where(o => o.PackageId == package.PackageId)
+                                                            .ToList();
+                    //Delete FK constraits
+                    foreach (PackagesProductsSupplier ele in pps)
+                    {
+                        db.PackagesProductsSuppliers.Remove(ele);
+                    }
+
+                    //Delete Package
+                    db.Packages.Remove(package);
+                    db.SaveChanges();
+                }
+                catch (DbUpdateException ex)
+                {
+                    Handles.HandleDbUpdateException(ex);
+                }
+                catch (Exception ex)
+                {
+                    Handles.LogToDebug(ex);
+                }
+            }
+        }
+
+        // Author: Alex Cress
+        /// <summary>
+        /// Removes the Product from the given Package
+        /// </summary>
+        /// <param name="package">the Package context</param>
+        /// <param name="productsSupplier">the Product to be removed</param>
+        public static void RemoveProduct(Package package, ProductsSupplier productsSupplier)
+        {
+            using (TravelExpertsContext db = new TravelExpertsContext())
+            {
+                try
+                {
+                    //Get ADO reference
+                    PackagesProductsSupplier pps = db.PackagesProductsSuppliers
+                                                        .Where(o => o.PackageId == package.PackageId
+                                                            && o.ProductSupplierId == productsSupplier.ProductSupplierId)
+                                                        .First();
+
+                    //Delete from database
+                    db.PackagesProductsSuppliers.Remove(pps);
+                    db.SaveChanges();
+
+                }
+                catch (DbUpdateException ex)
+                {
+                    Handles.HandleDbUpdateException(ex);
+                }
+                catch (Exception ex)
+                {
+                    Handles.LogToDebug(ex);
+                }
+            }
+        }
+
+        // Author: Alex Cress
+        /// <summary>
+        /// Adds a Product to the given Package.
+        /// </summary>
+        /// <param name="package">the Package context</param>
+        /// <param name="productsSupplier">the Product to be added</param>
+        public static void AddProduct(Package package, ProductsSupplier productsSupplier)
+        {
+            using (TravelExpertsContext db = new TravelExpertsContext())
+            {
+                try
+                {
+                    PackagesProductsSupplier pps = new PackagesProductsSupplier();
+                    pps.PackageId = package.PackageId;
+                    pps.ProductSupplierId = productsSupplier.ProductSupplierId;
+
+                    db.PackagesProductsSuppliers.Add(pps);
+                    db.SaveChanges();
+
+                }
+                catch (DbUpdateException ex)
+                {
+                    Handles.HandleDbUpdateException(ex);
+                }
+                catch (Exception ex)
+                {
+                    Handles.LogToDebug(ex);
+                }
+            }
         }
     }
 }

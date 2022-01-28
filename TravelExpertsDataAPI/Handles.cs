@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TravelExpertsData;
+using System.Diagnostics;
 
 /* A class to hold all error handles for the TravelExpertsDataAPI
  * Author: Daniel Palmer
@@ -69,6 +70,15 @@ namespace TravelExpertsDataAPI
             {
 
             }
+        }
+
+        /// <summary>
+        /// Writes Message and InnerException to Debug console.
+        /// </summary>
+        /// <param name="ex">the Exception you wish to output</param>
+        public static void LogToDebug(Exception ex)
+        {
+            Debug.WriteLine($"{ex.Message}, {ex.InnerException}");
         }
     }
 }

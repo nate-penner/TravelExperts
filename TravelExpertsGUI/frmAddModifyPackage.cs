@@ -9,6 +9,11 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using TravelExpertsData;
 
+/* A subform that allows modification of Packages.
+ * Authors: Alex Cress
+ * 2022-01-28
+ */
+
 namespace TravelExpertsGUI
 {
     /// <summary>
@@ -62,26 +67,36 @@ namespace TravelExpertsGUI
                 txtBasePrice.Text = package.PkgBasePrice.ToString("c");
                 txtAgencyCommission.Text = ((Decimal)package.PkgAgencyCommission).ToString("c");
                 dtpStartDate.Value = (DateTime) package.PkgStartDate;
-                dtpEndDate.Value = (DateTime)package.PkgEndDate;              
+                dtpEndDate.Value = (DateTime)package.PkgEndDate;
+                //Enable everything... no customization at this point
             }
         }
 
+        /// <summary>
+        /// Validates the form and sets DialogResult.OK if valid.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnAccept_Click(object sender, EventArgs e)
         {
+            string basePrice = RemoveCurrencyFormat(txtBasePrice.Text);
+            string agencyCommisson = RemoveCurrencyFormat(txtAgencyCommission.Text);
+
             //Basic form validation
             if (Validator.IsPresent(txtName) &&
                 Validator.IsPresent(txtDescription) &&
-                Validator.IsNonNegativeDecimal(txtBasePrice) &&
-                Validator.IsNonNegativeDecimal(txtAgencyCommission))         
+                Validator.IsNonNegativeDecimal(basePrice) &&
+                Validator.IsNonNegativeDecimal(agencyCommisson))         
             {
                 //Populate a new Package
                 Package newPackage = new Package();
+                newPackage.PackageId = package.PackageId;
                 newPackage.PkgName = txtName.Text;
                 newPackage.PkgDesc = txtDescription.Text;
                 newPackage.PkgStartDate = dtpStartDate.Value;
                 newPackage.PkgEndDate = dtpEndDate.Value;
-                newPackage.PkgBasePrice = Decimal.Parse(txtBasePrice.Text);
-                newPackage.PkgAgencyCommission = Decimal.Parse(txtAgencyCommission.Text);
+                newPackage.PkgBasePrice = Decimal.Parse(basePrice);
+                newPackage.PkgAgencyCommission = Decimal.Parse(agencyCommisson);
 
                 //Check business logic
                 if (Validator.IsValidPackage(newPackage))
@@ -94,5 +109,26 @@ namespace TravelExpertsGUI
 
         }
 
+        // Author: Alex Cress
+        /// <summary>
+        /// Removes '$' ',' and any whitespaces. Not compatable with any other currencies and/or foreign currency formats.
+        /// </summary>
+        /// <param name="s">the string to be formatted</param>
+        /// <returns>a string with all currency formatting removed</returns>
+        private string RemoveCurrencyFormat(string s)
+        {
+            return s.Replace("$", "").Replace(",", "").Trim();
+        }
+
+        // Author: Alex Cress
+        /// <summary>
+        /// Cancels any changes and closes the form.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            this.DialogResult = DialogResult.Cancel;
+        }
     }
 }

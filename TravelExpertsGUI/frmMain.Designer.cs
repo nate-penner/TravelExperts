@@ -32,6 +32,15 @@ namespace TravelExpertsGUI
         {
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.lstPackageTabAvailableSuppliers = new System.Windows.Forms.ListBox();
+            this.lstPackageTabActiveSuppliers = new System.Windows.Forms.ListBox();
+            this.lblPackageTabPackages = new System.Windows.Forms.Label();
+            this.btnPackageTabRemoveProduct = new System.Windows.Forms.Button();
+            this.btnPackageTabAddProduct = new System.Windows.Forms.Button();
+            this.lstPackageTabAvailableProducts = new System.Windows.Forms.ListBox();
+            this.lstPackageTabActiveProducts = new System.Windows.Forms.ListBox();
+            this.lblPackageTabAvailableProducts = new System.Windows.Forms.Label();
+            this.lblPackageTabActiveProducts = new System.Windows.Forms.Label();
             this.btnPackageTabDeletePackage = new System.Windows.Forms.Button();
             this.btnPackageTabEditPackage = new System.Windows.Forms.Button();
             this.btnPackageTabAddPackage = new System.Windows.Forms.Button();
@@ -59,6 +68,8 @@ namespace TravelExpertsGUI
             this.lblSupplierTabSuppliers = new System.Windows.Forms.Label();
             this.lstSupplierTabSuppliers = new System.Windows.Forms.ListBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -78,6 +89,17 @@ namespace TravelExpertsGUI
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.label2);
+            this.tabPage1.Controls.Add(this.label1);
+            this.tabPage1.Controls.Add(this.lstPackageTabAvailableSuppliers);
+            this.tabPage1.Controls.Add(this.lstPackageTabActiveSuppliers);
+            this.tabPage1.Controls.Add(this.lblPackageTabPackages);
+            this.tabPage1.Controls.Add(this.btnPackageTabRemoveProduct);
+            this.tabPage1.Controls.Add(this.btnPackageTabAddProduct);
+            this.tabPage1.Controls.Add(this.lstPackageTabAvailableProducts);
+            this.tabPage1.Controls.Add(this.lstPackageTabActiveProducts);
+            this.tabPage1.Controls.Add(this.lblPackageTabAvailableProducts);
+            this.tabPage1.Controls.Add(this.lblPackageTabActiveProducts);
             this.tabPage1.Controls.Add(this.btnPackageTabDeletePackage);
             this.tabPage1.Controls.Add(this.btnPackageTabEditPackage);
             this.tabPage1.Controls.Add(this.btnPackageTabAddPackage);
@@ -90,9 +112,94 @@ namespace TravelExpertsGUI
             this.tabPage1.Text = "Packages";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // lstPackageTabAvailableSuppliers
+            // 
+            this.lstPackageTabAvailableSuppliers.FormattingEnabled = true;
+            this.lstPackageTabAvailableSuppliers.ItemHeight = 15;
+            this.lstPackageTabAvailableSuppliers.Location = new System.Drawing.Point(505, 196);
+            this.lstPackageTabAvailableSuppliers.Name = "lstPackageTabAvailableSuppliers";
+            this.lstPackageTabAvailableSuppliers.Size = new System.Drawing.Size(133, 94);
+            this.lstPackageTabAvailableSuppliers.TabIndex = 14;
+            // 
+            // lstPackageTabActiveSuppliers
+            // 
+            this.lstPackageTabActiveSuppliers.FormattingEnabled = true;
+            this.lstPackageTabActiveSuppliers.ItemHeight = 15;
+            this.lstPackageTabActiveSuppliers.Location = new System.Drawing.Point(282, 196);
+            this.lstPackageTabActiveSuppliers.Name = "lstPackageTabActiveSuppliers";
+            this.lstPackageTabActiveSuppliers.Size = new System.Drawing.Size(133, 94);
+            this.lstPackageTabActiveSuppliers.TabIndex = 13;
+            // 
+            // lblPackageTabPackages
+            // 
+            this.lblPackageTabPackages.AutoSize = true;
+            this.lblPackageTabPackages.Location = new System.Drawing.Point(27, 30);
+            this.lblPackageTabPackages.Name = "lblPackageTabPackages";
+            this.lblPackageTabPackages.Size = new System.Drawing.Size(56, 15);
+            this.lblPackageTabPackages.TabIndex = 12;
+            this.lblPackageTabPackages.Text = "Packages";
+            // 
+            // btnPackageTabRemoveProduct
+            // 
+            this.btnPackageTabRemoveProduct.Location = new System.Drawing.Point(424, 149);
+            this.btnPackageTabRemoveProduct.Name = "btnPackageTabRemoveProduct";
+            this.btnPackageTabRemoveProduct.Size = new System.Drawing.Size(75, 23);
+            this.btnPackageTabRemoveProduct.TabIndex = 11;
+            this.btnPackageTabRemoveProduct.Text = ">>";
+            this.btnPackageTabRemoveProduct.UseVisualStyleBackColor = true;
+            this.btnPackageTabRemoveProduct.Click += new System.EventHandler(this.btnPackageTabRemoveProduct_Click);
+            // 
+            // btnPackageTabAddProduct
+            // 
+            this.btnPackageTabAddProduct.Location = new System.Drawing.Point(424, 178);
+            this.btnPackageTabAddProduct.Name = "btnPackageTabAddProduct";
+            this.btnPackageTabAddProduct.Size = new System.Drawing.Size(75, 23);
+            this.btnPackageTabAddProduct.TabIndex = 10;
+            this.btnPackageTabAddProduct.Text = "<<";
+            this.btnPackageTabAddProduct.UseVisualStyleBackColor = true;
+            this.btnPackageTabAddProduct.Click += new System.EventHandler(this.btnPackageTabAddProduct_Click);
+            // 
+            // lstPackageTabAvailableProducts
+            // 
+            this.lstPackageTabAvailableProducts.FormattingEnabled = true;
+            this.lstPackageTabAvailableProducts.ItemHeight = 15;
+            this.lstPackageTabAvailableProducts.Location = new System.Drawing.Point(505, 60);
+            this.lstPackageTabAvailableProducts.Name = "lstPackageTabAvailableProducts";
+            this.lstPackageTabAvailableProducts.Size = new System.Drawing.Size(133, 94);
+            this.lstPackageTabAvailableProducts.TabIndex = 9;
+            this.lstPackageTabAvailableProducts.SelectedIndexChanged += new System.EventHandler(this.lstPackageTabAvailableProducts_SelectedIndexChanged);
+            // 
+            // lstPackageTabActiveProducts
+            // 
+            this.lstPackageTabActiveProducts.FormattingEnabled = true;
+            this.lstPackageTabActiveProducts.ItemHeight = 15;
+            this.lstPackageTabActiveProducts.Location = new System.Drawing.Point(282, 60);
+            this.lstPackageTabActiveProducts.Name = "lstPackageTabActiveProducts";
+            this.lstPackageTabActiveProducts.Size = new System.Drawing.Size(133, 94);
+            this.lstPackageTabActiveProducts.TabIndex = 8;
+            this.lstPackageTabActiveProducts.SelectedIndexChanged += new System.EventHandler(this.lstPackageTabActiveProducts_SelectedIndexChanged);
+            // 
+            // lblPackageTabAvailableProducts
+            // 
+            this.lblPackageTabAvailableProducts.AutoSize = true;
+            this.lblPackageTabAvailableProducts.Location = new System.Drawing.Point(519, 30);
+            this.lblPackageTabAvailableProducts.Name = "lblPackageTabAvailableProducts";
+            this.lblPackageTabAvailableProducts.Size = new System.Drawing.Size(105, 15);
+            this.lblPackageTabAvailableProducts.TabIndex = 1;
+            this.lblPackageTabAvailableProducts.Text = "Available Products";
+            // 
+            // lblPackageTabActiveProducts
+            // 
+            this.lblPackageTabActiveProducts.AutoSize = true;
+            this.lblPackageTabActiveProducts.Location = new System.Drawing.Point(303, 30);
+            this.lblPackageTabActiveProducts.Name = "lblPackageTabActiveProducts";
+            this.lblPackageTabActiveProducts.Size = new System.Drawing.Size(90, 15);
+            this.lblPackageTabActiveProducts.TabIndex = 2;
+            this.lblPackageTabActiveProducts.Text = "Active Products";
+            // 
             // btnPackageTabDeletePackage
             // 
-            this.btnPackageTabDeletePackage.Location = new System.Drawing.Point(191, 255);
+            this.btnPackageTabDeletePackage.Location = new System.Drawing.Point(192, 283);
             this.btnPackageTabDeletePackage.Name = "btnPackageTabDeletePackage";
             this.btnPackageTabDeletePackage.Size = new System.Drawing.Size(75, 23);
             this.btnPackageTabDeletePackage.TabIndex = 7;
@@ -102,7 +209,7 @@ namespace TravelExpertsGUI
             // 
             // btnPackageTabEditPackage
             // 
-            this.btnPackageTabEditPackage.Location = new System.Drawing.Point(107, 255);
+            this.btnPackageTabEditPackage.Location = new System.Drawing.Point(108, 283);
             this.btnPackageTabEditPackage.Name = "btnPackageTabEditPackage";
             this.btnPackageTabEditPackage.Size = new System.Drawing.Size(75, 23);
             this.btnPackageTabEditPackage.TabIndex = 6;
@@ -112,7 +219,7 @@ namespace TravelExpertsGUI
             // 
             // btnPackageTabAddPackage
             // 
-            this.btnPackageTabAddPackage.Location = new System.Drawing.Point(26, 255);
+            this.btnPackageTabAddPackage.Location = new System.Drawing.Point(27, 283);
             this.btnPackageTabAddPackage.Name = "btnPackageTabAddPackage";
             this.btnPackageTabAddPackage.Size = new System.Drawing.Size(75, 23);
             this.btnPackageTabAddPackage.TabIndex = 5;
@@ -124,10 +231,11 @@ namespace TravelExpertsGUI
             // 
             this.lstPackageTabPackages.FormattingEnabled = true;
             this.lstPackageTabPackages.ItemHeight = 15;
-            this.lstPackageTabPackages.Location = new System.Drawing.Point(26, 32);
+            this.lstPackageTabPackages.Location = new System.Drawing.Point(27, 60);
             this.lstPackageTabPackages.Name = "lstPackageTabPackages";
             this.lstPackageTabPackages.Size = new System.Drawing.Size(240, 199);
             this.lstPackageTabPackages.TabIndex = 3;
+            this.lstPackageTabPackages.SelectedIndexChanged += new System.EventHandler(this.lstPackageTabPackages_SelectedIndexChanged);
             // 
             // tabPage2
             // 
@@ -359,6 +467,24 @@ namespace TravelExpertsGUI
             this.tabPage3.Size = new System.Drawing.Size(200, 100);
             this.tabPage3.TabIndex = 0;
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(303, 169);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(91, 15);
+            this.label1.TabIndex = 15;
+            this.label1.Text = "Active Suppliers";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(518, 169);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(106, 15);
+            this.label2.TabIndex = 16;
+            this.label2.Text = "Available Suppliers";
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -370,6 +496,7 @@ namespace TravelExpertsGUI
             this.Load += new System.EventHandler(this.frmMain_Load);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
+            this.tabPage1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
             this.tabSuppliers.ResumeLayout(false);
@@ -409,6 +536,17 @@ namespace TravelExpertsGUI
         private System.Windows.Forms.Button btnPackageTabEditPackage;
         private System.Windows.Forms.Button btnPackageTabAddPackage;
         private System.Windows.Forms.Button btnPackageTabDeletePackage;
+        private System.Windows.Forms.Label lblPackageTabPackages;
+        private System.Windows.Forms.Button btnPackageTabRemoveProduct;
+        private System.Windows.Forms.Button btnPackageTabAddProduct;
+        private System.Windows.Forms.ListBox lstPackageTabAvailableProducts;
+        private System.Windows.Forms.ListBox lstPackageTabActiveProducts;
+        private System.Windows.Forms.Label lblPackageTabAvailableProducts;
+        private System.Windows.Forms.Label lblPackageTabActiveProducts;
+        private System.Windows.Forms.ListBox lstPackageTabActiveSuppliers;
+        private System.Windows.Forms.ListBox lstPackageTabAvailableSuppliers;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label1;
     }
 }
 
