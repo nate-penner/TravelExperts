@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -124,6 +125,98 @@ namespace TravelExpertsDataAPI
                 }
 
             }
+        }
+
+        // Author: Alex Cress
+        /// <summary>
+        /// Gets the Suppliers for a given Package + Product combination.
+        /// </summary>
+        /// <param name="package">the Package context</param>
+        /// <param name="product">the Product context</param>
+        /// <returns>the Suppliers for the given parameters, or null if there are none</returns>
+        public static List<Supplier> GetSuppliersForPackageProduct(Package package, Product product)
+        {
+            List<Supplier> suppliers = null;
+            try
+            {
+                using (TravelExpertsContext db = new TravelExpertsContext())
+                {
+                    //Joins Suppliers, ProductSuppliers, and PackagesProductSuppliers, then filters based on the Package and Product IDs
+                    suppliers = db.Suppliers.Join(
+                                                  db.ProductsSuppliers,
+                                                  s => s.SupplierId,
+                                                  ps => ps.SupplierId,
+                                                  (s, ps) => new { s, ps })
+                                            .Join(
+                                                  db.PackagesProductsSuppliers,
+                                                  pps => pps.ps.ProductSupplierId,
+                                                  ps1 => ps1.ProductSupplierId,
+                                                  (pps, ps1) => new { pps, ps1 })
+                                            .Where(o => o.ps1.PackageId == package.PackageId && o.pps.ps.ProductId == product.ProductId)
+                                            .Select(l => l.pps.s)
+                                            .ToList();
+                }
+            }
+            catch (DbUpdateException ex)
+            {
+                Handles.HandleDbUpdateException(ex);
+            }
+            catch (Exception ex)
+            {
+                Handles.LogToDebug(ex);
+            }
+
+            return suppliers;
+        }
+        // Author: Alex Cress
+        /// <summary>
+        /// Gets the Suppliers for a given Product which are NOT included in a Package.
+        /// </summary>
+        /// <param name="package">the Package context</param>
+        /// <param name="product">the Product context</param>
+        /// <returns>the Suppliers for the given parameters, or null if there are none</returns>
+        public static List<Supplier> GetSuppliersForPackageProductExcluding(Package package, Product product)
+        {
+            List<Supplier> suppliers = null;
+            try
+            {
+                using (TravelExpertsContext db = new TravelExpertsContext())
+                {
+                    //Joins Suppliers and ProductsSuppliers, filters it on ProductId, removes any entries that exist in the subquery
+                    suppliers = db.Suppliers.Join(
+                                                  db.ProductsSuppliers,
+                                                  s => s.SupplierId,
+                                                  ps => ps.SupplierId,
+                                                  (s, ps) => new { s, ps })
+                                            .Where(o => o.ps.ProductId == product.ProductId)
+                                            .Select(k => k.s)
+                                            .Except(//Subquery joins Suppliers, ProductsSuppliers, and PackagesProductSuppliers, and filters it on PackageId.
+                                                    //The subquery returns the Suppliers for the given Package + Product combination.
+                                                    db.Suppliers.Join(
+                                                                      db.ProductsSuppliers,
+                                                                      s => s.SupplierId,
+                                                                      ps => ps.SupplierId,
+                                                                      (s, ps) => new { s, ps })
+                                                                .Join(
+                                                                      db.PackagesProductsSuppliers,
+                                                                      ps1 => ps1.ps.ProductSupplierId,
+                                                                      pps => pps.ProductSupplierId,
+                                                                      (ps1, pps) => new { ps1, pps })
+                                                                .Where(o => o.pps.PackageId == package.PackageId)
+                                                                .Select(o => o.ps1.s))
+                                            .ToList();
+                }
+            }
+            catch (DbUpdateException ex)
+            {
+                Handles.HandleDbUpdateException(ex);
+            }
+            catch (Exception ex)
+            {
+                Handles.LogToDebug(ex);
+            }
+
+            return suppliers;
         }
     }
 }

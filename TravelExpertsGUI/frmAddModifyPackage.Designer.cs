@@ -149,6 +149,7 @@ namespace TravelExpertsGUI
             this.btnCancel.TabIndex = 13;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
+            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
             // dtpStartDate
             // 
@@ -166,8 +167,10 @@ namespace TravelExpertsGUI
             // 
             // frmAddModifyPackage
             // 
+            this.AcceptButton = this.btnAccept;
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(427, 381);
             this.Controls.Add(this.dtpEndDate);
             this.Controls.Add(this.dtpStartDate);

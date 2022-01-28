@@ -185,7 +185,8 @@ namespace TravelExpertsGUI
         {
             bool isValid = true;
             decimal result; // for TryParse
-            if (!Decimal.TryParse(tb.Text, out result)) // TryParse returned false
+            string input = tb.Text.Replace("$", "").Replace(",", "").Trim(); //string from tb
+            if (!Decimal.TryParse(input, out result)) // TryParse returned false
             {
                 isValid = false;
                 MessageBox.Show(tb.Tag + " must be a number");
@@ -206,14 +207,40 @@ namespace TravelExpertsGUI
         }
 
         /// <summary>
-        /// Contains all business logic for a Package
+        /// Checks if the given string is a valid Decimal that is positive.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static bool IsNonNegativeDecimal(string s)
+        {
+            bool isValid = true;
+            decimal result; // for TryParse
+            if (!Decimal.TryParse(s, out result)) // TryParse returned false
+            {
+                isValid = false;
+            }
+            else // it's decimal value, but could be negative
+            {
+                if (result < 0)
+                {
+                    isValid = false;
+                }
+            }
+            return isValid;
+        }
+
+        // Author: Alex Cress
+        /// <summary>
+        /// Contains all business logic for a Package.
         /// </summary>
         /// <param name="package"></param>
         /// <returns></returns>
         public static bool IsValidPackage(Package package)
         {
             //TODO Check docs/implement all business-level requirements
-            if(DateTime.Compare((DateTime) package.PkgStartDate, (DateTime) package.PkgEndDate) >= 0)//Start date is not before end date
+
+            //Start date is not before end date
+            if (DateTime.Compare((DateTime) package.PkgStartDate, (DateTime) package.PkgEndDate) >= 0)
             {
                 MessageBox.Show("State date must be before end date!");
                 return false;
