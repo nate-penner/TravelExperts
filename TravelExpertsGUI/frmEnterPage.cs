@@ -15,6 +15,15 @@ namespace TravelExpertsGUI
         public frmEnterPage()
         {
             InitializeComponent();
+            this.Text = "Welcome";
+        }
+
+        private void btnEnter_Click(object sender, EventArgs e)
+        {
+            frmMain main = new frmMain();
+            main.EnterPage = this;
+            main.Show();
+            this.Hide();
         }
     }
 }

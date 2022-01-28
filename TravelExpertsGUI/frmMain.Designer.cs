@@ -30,6 +30,7 @@ namespace TravelExpertsGUI
         /// </summary>
         private void InitializeComponent()
         {
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.lstPackageTabAvailableSuppliers = new System.Windows.Forms.ListBox();

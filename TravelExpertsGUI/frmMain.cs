@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
 using TravelExpertsData;
@@ -16,7 +17,11 @@ namespace TravelExpertsGUI
 {
     public partial class frmMain : Form
     {
-        Supplier supplier;
+        private Supplier lstSupplierTabsupplier;
+
+        // Accepts the enterPage to let program close
+        public frmEnterPage EnterPage = null;
+
         public frmMain()
         {
             InitializeComponent();
@@ -58,17 +63,17 @@ namespace TravelExpertsGUI
         // Populates the tab with details about selected supplier
         // Author: Daniel Palmer
         private void lstSupplierTabSuppliers_SelectedIndexChanged(object sender, EventArgs e)
-               {
+        {
             // Makes sure there is an index selected in list
             if (lstSupplierTabSuppliers.SelectedValue != null)
             {
                 // Establishes the selected supplier and collects all products the supplier offers
-                supplier = (Supplier)lstSupplierTabSuppliers.SelectedValue;
+                lstSupplierTabsupplier = (Supplier)lstSupplierTabSuppliers.SelectedValue;
 
-                List<Product> product = TravelExpertsDataAPI.ProductDB.GetProducts(supplier);
+                List<Product> product = TravelExpertsDataAPI.ProductDB.GetProducts(lstSupplierTabsupplier);
 
                 // Displays all the supplier and product values to the form
-                txtSupplierTabSupplierId.Text = supplier.SupplierId.ToString();
+                txtSupplierTabSupplierId.Text = lstSupplierTabsupplier.SupplierId.ToString();
                 txtSupplierTabProductCount.Text = product.Count().ToString();
                 lstSupplierTabProducts.DataSource = product;
                 lstSupplierTabProducts.DisplayMember = "ProdName";
@@ -103,7 +108,8 @@ namespace TravelExpertsGUI
             if (result == DialogResult.OK)
             {
                 ProductDB.AddProduct(productsForm.SelectedProduct);
-            } else
+            }
+            else
             {
                 // Show an error message
             }
@@ -125,7 +131,8 @@ namespace TravelExpertsGUI
                     productsForm.SelectedProduct, productsForm.ProductSuppliers
                     );
                 productTabLoadSuppliers(productsForm.SelectedProduct);
-            } else
+            }
+            else
             {
                 // Show an error
 
@@ -166,7 +173,7 @@ namespace TravelExpertsGUI
 
             DialogResult result = AddForm.ShowDialog();
 
-            if(result == DialogResult.OK)
+            if (result == DialogResult.OK)
             {
                 // Grabs the Supplier and product created by the form
                 Supplier CurrentSupplier = AddForm.CurrentSupplier;
@@ -193,8 +200,8 @@ namespace TravelExpertsGUI
 
             DialogResult result = ModifyForm.ShowDialog();
 
-            if (result == DialogResult.OK) 
-            {   
+            if (result == DialogResult.OK)
+            {
                 // Grabs all changes to the supplier data and updates the table
                 Supplier CurrentSupplier = ModifyForm.CurrentSupplier;
                 SupplierDB.UpdateSupplier(CurrentSupplier);
@@ -533,5 +540,9 @@ namespace TravelExpertsGUI
             return (Package) lstPackageTabPackages.SelectedValue;
         }
 
+        private void frmMain_FormClosing(Object sender, FormClosingEventArgs e)
+        {
+            EnterPage.Close();
+        }
     }
 }
