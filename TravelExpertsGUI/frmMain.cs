@@ -30,7 +30,7 @@ namespace TravelExpertsGUI
             loadProductsTab();
 
             //Load package panel
-            PackageTabRenderPackageList();
+            InitializePackageTab();
         }
 
 
@@ -53,19 +53,6 @@ namespace TravelExpertsGUI
             lstSupplierTabSuppliers.DataSource = null;
             lstSupplierTabSuppliers.DataSource = SupplierTabSuppliers;
             lstSupplierTabSuppliers.DisplayMember = "SupName";
-        }
-
-        /// <summary>
-        /// Loads the package list with all packages
-        /// Author: Alex Cress
-        /// </summary>
-        private void PackageTabRenderPackageList()
-        {
-            //Get ADO table
-            List<Package> packages = TravelExpertsDataAPI.PackageDB.GetPackages();
-            //Render table
-            lstPackageTabPackages.DataSource = packages;
-            lstPackageTabPackages.DisplayMember = "PkgName";
         }
 
         // Populates the tab with details about selected supplier
@@ -216,9 +203,20 @@ namespace TravelExpertsGUI
             SupplierTabRenderList();
         }
 
+        private void InitializePackageTab()
+        {
+            PackageTabRenderPackages();
+            PackageTabRenderProducts();
+            PackageTabRenderSuppliers();
+        }
+
+        //////////////////////////////////////////////// Package Tab Code \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+        //************************************************** Button Handlers ******************************************************
+
+        // Author: Alex Cress
         /// <summary>
         /// Opens a form to accept user input for a new Package. If valid, the new Package will be saved to the database.
-        /// Author: Alex Cress
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -232,24 +230,24 @@ namespace TravelExpertsGUI
             if (result == DialogResult.OK)
             {
                 //Update DB
-                try 
+                try
                 {
                     PackageDB.AddPackage(inputForm.package);
                 }
                 //TODO Alex- more specific error handling
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     MessageBox.Show($"Error while adding new Package to the database: {ex.Message}", "Database Error");
                 }
-                
+
                 //Refresh table
-                PackageTabRenderPackageList();
+                PackageTabRenderPackages();
             }
         }
 
+        // Author: Alex Cress
         /// <summary>
         /// Opens a form to accept user input for modifying an existing Package. If valid, the modifications will be saved to the database.
-        /// Author: Alex Cress
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -263,7 +261,7 @@ namespace TravelExpertsGUI
             }
 
             //Get the selected Package from the table
-            Package selectedPackage = (Package) lstPackageTabPackages.SelectedItem;
+            Package selectedPackage = (Package)lstPackageTabPackages.SelectedItem;
 
             //Populate/show form
             frmAddModifyPackage inputForm = new frmAddModifyPackage(FORM_ACTION.UPDATE);
@@ -282,47 +280,258 @@ namespace TravelExpertsGUI
                 {
                     MessageBox.Show($"Error while modifying PackageId {inputForm.package.PackageId}: {ex.Message}", "Database Error");
                 }
+
+                PackageTabRenderPackages(lstPackageTabPackages.SelectedIndex);
             }
         }
 
+        // Author: Alex Cress
+        /// <summary>
+        /// Deletes the selected package from the database.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnPackageTabDeletePackage_Click(object sender, EventArgs e)
         {
             //Check if a row is selected (should always be selected by default)           
             if (lstPackageTabPackages.SelectedItem == null)
             {
-                MessageBox.Show("Please select a Package from the list to modify.");
+                MessageBox.Show("Please select a Package from the list to delete.");
                 return;
             }
 
             //Get the selected Package from the table
-            Package selectedPackage = (Package) lstPackageTabPackages.SelectedItem; 
+            Package selectedPackage = PackageTabGetSelectedPackage();
 
             //Confirm that the user wants to delete
             DialogResult answer = MessageBox.Show($"Do you want to delete {selectedPackage.PkgName}?",
                 "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-            //Delete the Product
             if (answer == DialogResult.Yes)
             {
-                using (TravelExpertsContext db = new TravelExpertsContext())
+                PackageDB.RemovePackage(selectedPackage);
+
+                PackageTabRenderPackages();
+            }
+        }
+
+        // Author: Alex Cress
+        /// <summary>
+        /// Adds a product to the selected package.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnPackageTabAddProduct_Click(object sender, EventArgs e)
+        {
+            //Get selected values
+            Package selectedPackage = (Package)lstPackageTabPackages.SelectedValue;
+            Product selectedProduct = PackageTabGetSelectedProduct();
+            Supplier selectedSupplier = PackageTabGetSelectedSupplier();
+            ProductsSupplier productsSupplier;
+
+            if (selectedPackage != null && selectedProduct != null)
+            {
+                productsSupplier = ProductSupplierDB.GetProductsSupplier(selectedProduct, selectedSupplier);
+
+                if (productsSupplier != null)
                 {
-                    try
-                    {
-                        //Get ADO reference
-                        selectedPackage = db.Packages.Find(selectedPackage.PackageId);
-                        //Delete from database
-                        db.Packages.Remove(selectedPackage);
-                        db.SaveChanges();
-                        //Refresh table
-                        PackageTabRenderPackageList();
-                    }
-                    //TODO Alex- more specific error handling
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show($"Error while deleting Package {selectedPackage.PkgName}: " + ex.Message, ex.GetType().ToString());
-                    }
+                    PackageDB.AddProduct(selectedPackage, productsSupplier);
+
+                    PackageTabRenderProducts();
                 }
             }
         }
+
+        // Author: Alex Cress
+        /// <summary>
+        /// Removes the selected Product from the selected Package.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnPackageTabRemoveProduct_Click(object sender, EventArgs e)
+        {
+            //Get selected values
+            Package selectedPackage = (Package)lstPackageTabPackages.SelectedValue;
+            Product selectedProduct = PackageTabGetSelectedProduct();
+            Supplier selectedSupplier = PackageTabGetSelectedSupplier();
+            ProductsSupplier productsSupplier;
+
+            if (selectedPackage != null && selectedProduct != null)
+            {
+                productsSupplier = ProductSupplierDB.GetProductsSupplier(selectedProduct, selectedSupplier);
+
+                if (productsSupplier != null)
+                {
+                    PackageDB.RemoveProduct(selectedPackage, productsSupplier);
+
+                    PackageTabRenderProducts();
+                }
+            }
+        }
+
+        //************************************************** Misc. Event Listeners ******************************************************
+
+        // Author: Alex Cress
+        /// <summary>
+        /// Renders Product lists when Package selection changes
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void lstPackageTabPackages_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            PackageTabRenderProducts();
+            PackageTabRenderSuppliers();
+        }
+
+        // Author: Alex Cress
+        /// <summary>
+        /// Ensures only one value is selected between its sister table lstPackageTabAvailableProducts and itself.
+        /// Updates Suppliers based off of selected package.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void lstPackageTabActiveProducts_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //Remove selection from sister table
+            if (lstPackageTabActiveProducts.SelectedIndex != -1) //Avoid cancelling out
+            {
+                lstPackageTabAvailableProducts.SelectedIndex = -1;
+            }
+
+            PackageTabRenderSuppliers();
+        }
+
+        // Author: Alex Cress
+        /// <summary>
+        /// Ensures only one value is selected between its sister table lstPackageTabActiveProducts and itself.
+        /// Updates Suppliers based off of selected package.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void lstPackageTabAvailableProducts_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //Remove selection from sister table
+            if (lstPackageTabAvailableProducts.SelectedIndex != -1) //Avoid cancelling out
+            {
+                lstPackageTabActiveProducts.SelectedIndex = -1;
+            }
+
+            PackageTabRenderSuppliers();
+        }
+
+        //************************************************** Renderers *************************************************************
+
+        // Author: Alex Cress
+        /// <summary>
+        /// Refreshes the Packages table Data Source.
+        /// </summary>
+        private void PackageTabRenderPackages()
+        {
+            //Get all packages
+            List<Package> packages = PackageDB.GetPackages();
+
+            //Render packages
+            lstPackageTabPackages.DataSource = packages;
+            lstPackageTabPackages.DisplayMember = "PkgName";
+        }
+
+        // Author: Alex Cress
+        /// <summary>
+        /// Refreshes the Packages table Data Source and retains selected index in the list.
+        /// </summary>
+        /// <param name="index">the table index you want to be selected after refreshing</param>
+        private void PackageTabRenderPackages(int index)
+        {
+            PackageTabRenderPackages();
+            lstPackageTabPackages.SelectedIndex = index;
+        }
+
+        // Author: Alex Cress
+        /// <summary>
+        /// Refreshes the Products table Data Source.
+        /// </summary>
+        private void PackageTabRenderProducts()
+        {
+            Package selectedPackage = PackageTabGetSelectedPackage();
+
+            //Get products for selected Package
+            List<Product> activeProducts = TravelExpertsDataAPI.ProductDB.GetProducts(selectedPackage);
+
+            //Get products not in selected Package
+            List<Product> availableProducts = TravelExpertsDataAPI.ProductDB.GetProductsExcluding(selectedPackage);
+
+            //Render tables
+            lstPackageTabActiveProducts.DataSource = activeProducts;
+            lstPackageTabActiveProducts.DisplayMember = "ProdName";
+            lstPackageTabActiveProducts.SelectedIndex = -1;
+
+            lstPackageTabAvailableProducts.DataSource = availableProducts;
+            lstPackageTabAvailableProducts.DisplayMember = "ProdName";
+            lstPackageTabAvailableProducts.SelectedIndex = -1;
+        }
+
+        // Author: Alex Cress
+        /// <summary>
+        /// Renders Supplier tables using selected values from Product tables
+        /// </summary>
+        private void PackageTabRenderSuppliers()
+        {
+            //Get selected values from lists
+            Package selectedPackage = PackageTabGetSelectedPackage();
+            Product selectedProduct = PackageTabGetSelectedProduct();
+
+            //Get Suppliers for Product
+            List<Supplier> activeSuppliers = null;
+            List<Supplier> availableSuppliers = null;
+
+            if (selectedPackage != null && selectedProduct != null)
+            {
+                activeSuppliers = SupplierDB.GetSuppliersForPackageProduct(selectedPackage, selectedProduct);
+                availableSuppliers = SupplierDB.GetSuppliersForPackageProductExcluding(selectedPackage, selectedProduct);
+            }
+
+            //Update supplier table
+            lstPackageTabActiveSuppliers.DataSource = activeSuppliers;
+            lstPackageTabActiveSuppliers.DisplayMember = "SupName";
+            lstPackageTabActiveSuppliers.SelectedIndex = -1;
+
+            lstPackageTabAvailableSuppliers.DataSource = availableSuppliers;
+            lstPackageTabAvailableSuppliers.DisplayMember = "SupName";
+            lstPackageTabAvailableSuppliers.SelectedIndex = -1;
+
+        }
+
+        //************************************************** Getters/Helpers *************************************************************
+
+        // Author: Alex Cress
+        /// <summary>
+        /// Gets the selected Supplier from the Supplier tables.
+        /// </summary>
+        /// <returns>the selected Package, or null if none</returns>
+        private Supplier PackageTabGetSelectedSupplier()
+        {
+            return lstPackageTabAvailableSuppliers.SelectedIndex != -1 ? (Supplier) lstPackageTabAvailableSuppliers.SelectedValue : (Supplier) lstPackageTabActiveSuppliers.SelectedValue;
+        }
+
+        // Author: Alex Cress
+        /// <summary>
+        /// Gets the selected Product from the Product tables.
+        /// </summary>
+        /// <returns>the selected Package, or null if none</returns>
+        private Product PackageTabGetSelectedProduct()
+        {
+            return lstPackageTabAvailableProducts.SelectedIndex != -1 ? (Product)lstPackageTabAvailableProducts.SelectedValue : (Product)lstPackageTabActiveProducts.SelectedValue;
+        }
+
+        // Author: Alex Cress
+        /// <summary>
+        /// Gets the selected Package from the Package tables.
+        /// </summary>
+        /// <returns>the selected Package, or null if none</returns>
+        private Package PackageTabGetSelectedPackage()
+        {
+            return (Package) lstPackageTabPackages.SelectedValue;
+        }
+
     }
 }

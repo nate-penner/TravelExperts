@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -95,6 +96,37 @@ namespace TravelExpertsDataAPI
         public static void RemoveProductSupplier(Product product, Supplier supplier)
         {
             // Remove this relationship from products_suppliers table
+        }
+
+        // Author: Alex Cress
+        /// <summary>
+        /// Gets the ProductsSupplier for a given Product + Supplier combination.
+        /// </summary>
+        /// <param name="product">the Product context</param>
+        /// <param name="supplier">the Supplier context</param>
+        /// <returns></returns>
+        public static ProductsSupplier GetProductsSupplier(Product product, Supplier supplier)
+        {
+            ProductsSupplier productsSupplier = null;
+            try
+            {
+                using (TravelExpertsContext db = new TravelExpertsContext())
+                {
+                    productsSupplier = db.ProductsSuppliers.Where(o => o.SupplierId == supplier.SupplierId
+                                                                  && o.ProductId == product.ProductId)
+                                                           .First();
+                }
+            }
+            catch (DbUpdateException ex)
+            {
+                Handles.HandleDbUpdateException(ex);
+            }
+            catch (Exception ex)
+            {
+                Handles.LogToDebug(ex);
+            }
+
+            return productsSupplier;
         }
     }
 }
