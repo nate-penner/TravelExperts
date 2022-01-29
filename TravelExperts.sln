@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TravelExpertsGUI", "TravelE
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TravelExpertsData", "TravelExpertsData\TravelExpertsData.csproj", "{25E4C148-DDFC-487F-8BB1-95ACA5BFA308}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TravelExpertsDataAPI", "TravelExpertsDataAPI\TravelExpertsDataAPI.csproj", "{BA4DE316-BB3F-4400-B336-9BF05C78BAA8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TravelExpertsDataAPI", "TravelExpertsDataAPI\TravelExpertsDataAPI.csproj", "{BA4DE316-BB3F-4400-B336-9BF05C78BAA8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
