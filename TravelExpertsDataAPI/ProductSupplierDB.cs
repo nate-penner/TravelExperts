@@ -44,6 +44,57 @@ namespace TravelExpertsDataAPI
             }
         }
 
+        public static List<Package> GetPackages(ProductsSupplier productsSupplier)
+        {
+            List<Package> packages = null;
+            using (TravelExpertsContext db = new TravelExpertsContext())
+            {
+                packages = db.Packages
+                    .Join(db.PackagesProductsSuppliers,
+                    p => p.PackageId,
+                    pps => pps.PackageId,
+                    (p, pps) => new { p, pps }
+                    ).Where(o => o.pps.ProductSupplierId == productsSupplier.ProductSupplierId)
+                    .Select(o => o.p).ToList();
+            }
+            return packages;
+        }
+
+        public static ProductsSupplier GetProductSupplier(Product product, Supplier supplier)
+        {
+            ProductsSupplier ps = null;
+            using (TravelExpertsContext db = new TravelExpertsContext())
+            {
+                try
+                {
+                    ps = db.ProductsSuppliers
+                        .Where(ps => ps.ProductId == product.ProductId && ps.SupplierId == supplier.SupplierId)
+                        .Single();
+                }
+                catch (Exception) { }
+            }
+            return ps;
+        }
+
+        public static bool IsArchived(ProductsSupplier productSupplier)
+        {
+            bool result;
+            using (TravelExpertsContext db = new TravelExpertsContext())
+            {
+                try
+                {
+                    db.ProductsSuppliersArchives
+                        .Where(psa => psa.ProductSupplierId == productSupplier.ProductSupplierId)
+                        .Single();
+                    result = true;
+                } catch (Exception)
+                {
+                    result = false;
+                }
+            }
+            return result;
+        }
+
         /// <summary>
         /// Updates the relationship in the database between the product passed and the
         /// suppliers providing that product.

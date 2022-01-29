@@ -40,6 +40,20 @@ namespace TravelExpertsGUI
         // Form on load event handler
         private void frmProducts_Load(object sender, EventArgs e)
         {
+            // Get archive productsupplierid
+
+            using (TravelExpertsContext db = new TravelExpertsContext())
+            {
+                List<string> archived = db.ProductsSuppliersArchives
+                    .Join(db.ProductsSuppliers,
+                    psa => psa.ProductSupplierId,
+                    ps => ps.ProductSupplierId,
+                    (psa, ps) => ps
+                    ).Select(o => o.SupplierId + ": " + o.ProductId).ToList();
+
+                MessageBox.Show($"Archived relationships: {string.Join(", ", archived)}");
+            }
+
             // Get all suppliers from the database
             potentialSuppliers = SupplierDB.GetSuppliers();
 
@@ -127,12 +141,33 @@ namespace TravelExpertsGUI
         private void btnRemoveSuppliers_Click(object sender, EventArgs e)
         {
             // Loop through all the selected suppliers and move them from
-            // potentialSuppliers list to the productSuppliers list
+            // productSuppliers list to the potentialSuppliers list
             GetSelectedSuppliers(lstCurrentSuppliers, ProductSuppliers)
                 .ForEach(s =>
                 {
-                    potentialSuppliers.Add(s);
-                    ProductSuppliers.Remove(s);
+                    // Check if ProductsSupplier is in any Package
+                    ProductsSupplier ps = ProductSupplierDB.GetProductSupplier(
+                        SelectedProduct, s);
+
+                    List<Package> packages = null;
+
+                    if (ps != null)
+                        packages = ProductSupplierDB.GetPackages(ps);
+
+                    if (packages != null && packages.Count > 0)
+                    {
+                        string[] packageNames = packages.Select(p => p.PkgName).ToArray();
+                        MessageBox.Show(
+                            $"The supplier {s.SupName} for {SelectedProduct.ProdName} " +
+                            " could not be deleted because it is being used by the following " +
+                            $"packages:\n\t{string.Join("\n\t", packageNames)}\n" +
+                            "Please remove this product supplier from all packages before " +
+                            "deleting!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    } else
+                    {
+                        potentialSuppliers.Add(s);
+                        ProductSuppliers.Remove(s);
+                    }
                 });
 
             UpdateListBoxes();
@@ -170,6 +205,21 @@ namespace TravelExpertsGUI
                 MessageBox.Show("Please enter a product name!", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtProductName.Focus();
+            }
+        }
+
+        private void frmProducts_Click(object sender, EventArgs e)
+        {
+            foreach (int index in lstPotentialSuppliers.SelectedIndices)
+            {
+                Supplier s = (Supplier)lstPotentialSuppliers.Items[index];
+                Product p = SelectedProduct;
+                ProductsSupplier ps = ProductSupplierDB.GetProductSupplier(p, s);
+                
+                if (ps != null && ProductSupplierDB.IsArchived(ps))
+                {
+                    MessageBox.Show($"{p.ProdName} offered by {s.SupName} is archived!");
+                }
             }
         }
     }

@@ -89,7 +89,7 @@ namespace TravelExpertsGUI
             this.btnAddSuppliers.Name = "btnAddSuppliers";
             this.btnAddSuppliers.Size = new System.Drawing.Size(96, 49);
             this.btnAddSuppliers.TabIndex = 4;
-            this.btnAddSuppliers.Text = "< <";
+            this.btnAddSuppliers.Text = "<< &Add Suppliers";
             this.btnAddSuppliers.UseVisualStyleBackColor = true;
             this.btnAddSuppliers.Click += new System.EventHandler(this.btnAddSuppliers_Click);
             // 
@@ -101,7 +101,7 @@ namespace TravelExpertsGUI
             this.btnRemoveSuppliers.Name = "btnRemoveSuppliers";
             this.btnRemoveSuppliers.Size = new System.Drawing.Size(96, 49);
             this.btnRemoveSuppliers.TabIndex = 5;
-            this.btnRemoveSuppliers.Text = "> >";
+            this.btnRemoveSuppliers.Text = "&Remove Suppliers >>";
             this.btnRemoveSuppliers.UseVisualStyleBackColor = true;
             this.btnRemoveSuppliers.Click += new System.EventHandler(this.btnRemoveSuppliers_Click);
             // 
@@ -169,6 +169,7 @@ namespace TravelExpertsGUI
             this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "frmProducts";
             this.Load += new System.EventHandler(this.frmProducts_Load);
+            this.Click += new System.EventHandler(this.frmProducts_Click);
             this.ResumeLayout(false);
             this.PerformLayout();
 

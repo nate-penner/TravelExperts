@@ -67,6 +67,17 @@ namespace TravelExpertsDataAPI
                     .Where(o => o.ps.ProductId == product.ProductId)
                     .Select(o => o.s)
                     .ToList();
+
+                List<ProductsSupplier> productsSuppliers = db.ProductsSuppliers
+                    .Where(ps => ps.ProductId == product.ProductId).ToList();
+
+                // filter out archived ones
+                db.ProductsSuppliersArchives.ToList().ForEach(psa =>
+                {
+                    productsSuppliers = productsSuppliers
+                        .Where(ps => ps.ProductSupplierId != psa.ProductSupplierId).ToList();
+                });
+                suppliers = productsSuppliers.Select(ps => ps.Supplier).ToList();
             }
 
             return suppliers;

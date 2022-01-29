@@ -33,6 +33,7 @@ namespace TravelExpertsData
         public virtual DbSet<PackagesProductsSupplier> PackagesProductsSuppliers { get; set; }
         public virtual DbSet<Product> Products { get; set; }
         public virtual DbSet<ProductsSupplier> ProductsSuppliers { get; set; }
+        public virtual DbSet<ProductsSuppliersArchive> ProductsSuppliersArchives { get; set; }
         public virtual DbSet<Region> Regions { get; set; }
         public virtual DbSet<Reward> Rewards { get; set; }
         public virtual DbSet<Supplier> Suppliers { get; set; }
@@ -236,6 +237,14 @@ namespace TravelExpertsData
                     .WithMany(p => p.ProductsSuppliers)
                     .HasForeignKey(d => d.SupplierId)
                     .HasConstraintName("Products_Suppliers_FK01");
+            });
+
+            modelBuilder.Entity<ProductsSuppliersArchive>(entity =>
+            {
+                entity.HasOne(d => d.ProductSupplier)
+                    .WithOne()
+                    .HasForeignKey<ProductsSuppliersArchive>(d => d.ProductSupplierId)
+                    .HasConstraintName("Products_Suppliers_Archive_FK00");
             });
 
             modelBuilder.Entity<Region>(entity =>
