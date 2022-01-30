@@ -39,26 +39,14 @@ namespace TravelExpertsGUI
 
         // Form on load event handler
         private void frmProducts_Load(object sender, EventArgs e)
-        {
-            // Get archive productsupplierid
-
-            using (TravelExpertsContext db = new TravelExpertsContext())
-            {
-                List<string> archived = db.ProductsSuppliersArchives
-                    .Join(db.ProductsSuppliers,
-                    psa => psa.ProductSupplierId,
-                    ps => ps.ProductSupplierId,
-                    (psa, ps) => ps
-                    ).Select(o => o.SupplierId + ": " + o.ProductId).ToList();
-
-                MessageBox.Show($"Archived relationships: {string.Join(", ", archived)}");
-            }
-
+        {         
             // Get all suppliers from the database
             potentialSuppliers = SupplierDB.GetSuppliers();
 
             if (IsAdd)
             {
+                SelectedProduct = new Product();
+                ProductSuppliers = new List<Supplier>();
                 // Add a product
                 this.Text = "Add Product";
                 lstPotentialSuppliers.DataSource = potentialSuppliers;
@@ -185,6 +173,8 @@ namespace TravelExpertsGUI
             // Reload the data in the list controls
             lstPotentialSuppliers.DataSource = potentialSuppliers;
             lstCurrentSuppliers.DataSource = ProductSuppliers;
+            lstPotentialSuppliers.DisplayMember = "SupName";
+            lstCurrentSuppliers.DisplayMember = "SupName";
         }
 
         // Cancel this operation and close the form

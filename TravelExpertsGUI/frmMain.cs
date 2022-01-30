@@ -39,13 +39,22 @@ namespace TravelExpertsGUI
         }
 
 
-        // Loads a list of products from the databaes into the Products tab
+        // Loads a list of products from the database into the Products tab
         // Author: Nate Penner
         private void loadProductsTab()
         {
             lstProductTabProducts.DataSource = ProductDB.GetProducts()
                 .OrderBy(p => p.ProdName).ToList();
             lstProductTabProducts.DisplayMember = "ProdName";
+        }
+
+        private void loadProductsTab(Product selected)
+        {
+            List<Product> products = ProductDB.GetProducts()
+                .OrderBy(p => p.ProdName).ToList();
+            lstProductTabProducts.DataSource = products;
+            lstProductTabProducts.SelectedItem = products.Where(p => p.ProductId == selected.ProductId)
+                .Single();
         }
 
         // Renders the product list on the SupplierTab
@@ -108,6 +117,12 @@ namespace TravelExpertsGUI
             if (result == DialogResult.OK)
             {
                 ProductDB.AddProduct(productsForm.SelectedProduct);
+                ProductSupplierDB.AddProductSuppliers(
+                    productsForm.SelectedProduct, productsForm.ProductSuppliers
+                    );
+                loadProductsTab(productsForm.SelectedProduct);
+                
+                productTabLoadSuppliers(productsForm.SelectedProduct);
             }
             else
             {

@@ -44,6 +44,21 @@ namespace TravelExpertsDataAPI
             }
         }
 
+        public static void AddProductSuppliers(Product product, List<Supplier> suppliers)
+        {
+            using (TravelExpertsContext db = new TravelExpertsContext())
+            {
+                suppliers.ForEach(s =>
+                    {
+                        ProductsSupplier ps = new ProductsSupplier();
+                        ps.ProductId = product.ProductId;
+                        ps.SupplierId = s.SupplierId;
+                        db.ProductsSuppliers.Add(ps);
+                    });
+                db.SaveChanges();
+            }
+        }
+
         public static List<Package> GetPackages(ProductsSupplier productsSupplier)
         {
             List<Package> packages = null;
