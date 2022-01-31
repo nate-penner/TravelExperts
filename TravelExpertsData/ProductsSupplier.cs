@@ -33,6 +33,8 @@ namespace TravelExpertsData
         [ForeignKey(nameof(SupplierId))]
         [InverseProperty("ProductsSuppliers")]
         public virtual Supplier Supplier { get; set; }
+        [InverseProperty("ProductSupplier")]
+        public virtual ProductsSuppliersArchive ProductsSuppliersArchive { get; set; }
         [InverseProperty(nameof(BookingDetail.ProductSupplier))]
         public virtual ICollection<BookingDetail> BookingDetails { get; set; }
         [InverseProperty(nameof(PackagesProductsSupplier.ProductSupplier))]

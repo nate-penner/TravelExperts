@@ -39,12 +39,14 @@ namespace TravelExpertsGUI
 
         // Form on load event handler
         private void frmProducts_Load(object sender, EventArgs e)
-        {
+        {         
             // Get all suppliers from the database
             potentialSuppliers = SupplierDB.GetSuppliers();
 
             if (IsAdd)
             {
+                SelectedProduct = new Product();
+                ProductSuppliers = new List<Supplier>();
                 // Add a product
                 this.Text = "Add Product";
                 lstPotentialSuppliers.DataSource = potentialSuppliers;
@@ -127,12 +129,33 @@ namespace TravelExpertsGUI
         private void btnRemoveSuppliers_Click(object sender, EventArgs e)
         {
             // Loop through all the selected suppliers and move them from
-            // potentialSuppliers list to the productSuppliers list
+            // productSuppliers list to the potentialSuppliers list
             GetSelectedSuppliers(lstCurrentSuppliers, ProductSuppliers)
                 .ForEach(s =>
                 {
-                    potentialSuppliers.Add(s);
-                    ProductSuppliers.Remove(s);
+                    // Check if ProductsSupplier is in any Package
+                    ProductsSupplier ps = ProductSupplierDB.GetProductSupplier(
+                        SelectedProduct, s);
+
+                    List<Package> packages = null;
+
+                    if (ps != null)
+                        packages = ProductSupplierDB.GetPackages(ps);
+
+                    if (packages != null && packages.Count > 0)
+                    {
+                        string[] packageNames = packages.Select(p => p.PkgName).ToArray();
+                        MessageBox.Show(
+                            $"The supplier {s.SupName} for {SelectedProduct.ProdName} " +
+                            " could not be deleted because it is being used by the following " +
+                            $"packages:\n\t{string.Join("\n\t", packageNames)}\n" +
+                            "Please remove this product supplier from all packages before " +
+                            "deleting!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    } else
+                    {
+                        potentialSuppliers.Add(s);
+                        ProductSuppliers.Remove(s);
+                    }
                 });
 
             UpdateListBoxes();
@@ -150,6 +173,8 @@ namespace TravelExpertsGUI
             // Reload the data in the list controls
             lstPotentialSuppliers.DataSource = potentialSuppliers;
             lstCurrentSuppliers.DataSource = ProductSuppliers;
+            lstPotentialSuppliers.DisplayMember = "SupName";
+            lstCurrentSuppliers.DisplayMember = "SupName";
         }
 
         // Cancel this operation and close the form
@@ -161,7 +186,31 @@ namespace TravelExpertsGUI
         // Save this data and close the form
         private void btnSave_Click(object sender, EventArgs e)
         {
-            this.DialogResult = DialogResult.OK;
+            if (txtProductName.Text != "")
+            {
+                SelectedProduct.ProdName = txtProductName.Text;
+                this.DialogResult = DialogResult.OK;
+            } else
+            {
+                MessageBox.Show("Please enter a product name!", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                txtProductName.Focus();
+            }
+        }
+
+        private void frmProducts_Click(object sender, EventArgs e)
+        {
+            foreach (int index in lstPotentialSuppliers.SelectedIndices)
+            {
+                Supplier s = (Supplier)lstPotentialSuppliers.Items[index];
+                Product p = SelectedProduct;
+                ProductsSupplier ps = ProductSupplierDB.GetProductSupplier(p, s);
+                
+                if (ps != null && ProductSupplierDB.IsArchived(ps))
+                {
+                    MessageBox.Show($"{p.ProdName} offered by {s.SupName} is archived!");
+                }
+            }
         }
     }
 }

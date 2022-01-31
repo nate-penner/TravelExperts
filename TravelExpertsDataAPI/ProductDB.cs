@@ -94,8 +94,13 @@ namespace TravelExpertsDataAPI
             {
                 using(TravelExpertsContext db = new TravelExpertsContext())
                 {
+                    // Find the product to update based on the productId
                     Product dbProduct = db.Products.Find(product.ProductId);
+
+                    // Set the data
                     dbProduct.ProdName = product.ProdName;
+
+                    // Save the product
                     db.Products.Update(dbProduct);
                     db.SaveChanges();
                 }

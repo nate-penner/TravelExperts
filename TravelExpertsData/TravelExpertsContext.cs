@@ -33,6 +33,7 @@ namespace TravelExpertsData
         public virtual DbSet<PackagesProductsSupplier> PackagesProductsSuppliers { get; set; }
         public virtual DbSet<Product> Products { get; set; }
         public virtual DbSet<ProductsSupplier> ProductsSuppliers { get; set; }
+        public virtual DbSet<ProductsSuppliersArchive> ProductsSuppliersArchives { get; set; }
         public virtual DbSet<Region> Regions { get; set; }
         public virtual DbSet<Reward> Rewards { get; set; }
         public virtual DbSet<Supplier> Suppliers { get; set; }
@@ -49,7 +50,7 @@ namespace TravelExpertsData
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasAnnotation("Relational:Collation", "Latin1_General_CI_AS");
+            modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
 
             modelBuilder.Entity<Affiliation>(entity =>
             {
@@ -236,6 +237,20 @@ namespace TravelExpertsData
                     .WithMany(p => p.ProductsSuppliers)
                     .HasForeignKey(d => d.SupplierId)
                     .HasConstraintName("Products_Suppliers_FK01");
+            });
+
+            modelBuilder.Entity<ProductsSuppliersArchive>(entity =>
+            {
+                entity.HasKey(e => e.ProductSupplierId)
+                    .HasName("ProductSupplierId_PK00");
+
+                entity.Property(e => e.ProductSupplierId).ValueGeneratedNever();
+
+                entity.HasOne(d => d.ProductSupplier)
+                    .WithOne(p => p.ProductsSuppliersArchive)
+                    .HasForeignKey<ProductsSuppliersArchive>(d => d.ProductSupplierId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("Products_Suppliers_Archive_FK00");
             });
 
             modelBuilder.Entity<Region>(entity =>

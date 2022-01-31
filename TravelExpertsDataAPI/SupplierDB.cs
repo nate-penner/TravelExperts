@@ -53,10 +53,13 @@ namespace TravelExpertsDataAPI
         /// <returns>A list of suppliers providing this product</returns>
         public static List<Supplier> GetSuppliers(Product product)
         {
+            // The suppliers for the product
             List<Supplier> suppliers = null;
 
+            // Read from DB
             using (TravelExpertsContext db = new TravelExpertsContext())
             {
+                // Get all suppliers for this product
                 suppliers = db.ProductsSuppliers
                     .Join(
                         db.Suppliers,
@@ -67,6 +70,20 @@ namespace TravelExpertsDataAPI
                     .Where(o => o.ps.ProductId == product.ProductId)
                     .Select(o => o.s)
                     .ToList();
+
+                // Get the ProductsSupplier object
+                List<ProductsSupplier> productsSuppliers = db.ProductsSuppliers
+                    .Where(ps => ps.ProductId == product.ProductId).ToList();
+
+                // filter out archived ProductsSuppliers
+                db.ProductsSuppliersArchives.ToList().ForEach(psa =>
+                {
+                    productsSuppliers = productsSuppliers
+                        .Where(ps => ps.ProductSupplierId != psa.ProductSupplierId).ToList();
+                });
+
+                // Refill the suppliers list
+                suppliers = productsSuppliers.Select(ps => ps.Supplier).ToList();
             }
 
             return suppliers;

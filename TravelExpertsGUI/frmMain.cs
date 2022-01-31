@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
 using TravelExpertsData;
@@ -30,8 +29,7 @@ namespace TravelExpertsGUI
         {
             SupplierTabRenderList();
 
-            // Product panel code
-            // Author: Nate Penner
+            // Load the products tab
             loadProductsTab();
 
             //Load package panel
@@ -39,13 +37,28 @@ namespace TravelExpertsGUI
         }
 
 
-        // Loads a list of products from the databaes into the Products tab
+        // Loads a list of products from the database into the Products tab
         // Author: Nate Penner
         private void loadProductsTab()
         {
             lstProductTabProducts.DataSource = ProductDB.GetProducts()
                 .OrderBy(p => p.ProdName).ToList();
             lstProductTabProducts.DisplayMember = "ProdName";
+        }
+
+        // Loads a list of products from the database into the Products tab
+        // and selects the Product passed to the method
+        // Author: Nate Penner
+        private void loadProductsTab(Product selected)
+        {
+            // Get the products from the db
+            List<Product> products = ProductDB.GetProducts()
+                .OrderBy(p => p.ProdName).ToList();
+
+            // Load them into the list and select the correct one
+            lstProductTabProducts.DataSource = products;
+            lstProductTabProducts.SelectedItem = products.Where(p => p.ProductId == selected.ProductId)
+                .Single();
         }
 
         // Renders the product list on the SupplierTab
@@ -100,18 +113,35 @@ namespace TravelExpertsGUI
         // Author: Nate Penner
         private void btnProductTabAddProduct_Click(object sender, EventArgs e)
         {
+            // Create a new form to enter data
             frmProducts productsForm = new frmProducts();
             productsForm.IsAdd = true;
 
+            // Open as modal form, add operation
             DialogResult result = productsForm.ShowDialog();
 
+            // If it returned ok
             if (result == DialogResult.OK)
             {
+                // Add the product to the database
                 ProductDB.AddProduct(productsForm.SelectedProduct);
+
+                // Add any suppliers chosen for this product to the database
+                ProductSupplierDB.AddProductSuppliers(
+                    productsForm.SelectedProduct, productsForm.ProductSuppliers
+                    );
+
+                // Reload the products tab product list, selecting the new product
+                loadProductsTab(productsForm.SelectedProduct);
+                
+                // Reload the products tab supplier list for the new product
+                productTabLoadSuppliers(productsForm.SelectedProduct);
             }
             else
             {
                 // Show an error message
+                MessageBox.Show("Unable to add the product!", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -119,23 +149,52 @@ namespace TravelExpertsGUI
         // Author: Nate Penner
         private void btnProductTabEditProduct_Click(object sender, EventArgs e)
         {
+            // Show a new form to modify the product data
             frmProducts productsForm = new frmProducts();
             productsForm.IsAdd = false;
+
+            // Get the product selected from the list
             productsForm.SelectedProduct = productTabGetProductSelection();
 
+            // Open as modal form, for modify/edit operation
             DialogResult result = productsForm.ShowDialog();
 
+            // If everything is OK
             if (result == DialogResult.OK)
             {
-                ProductSupplierDB.UpdateProductSuppliers(
+                // Update the suppliers for the product, retrieving any package names
+                // conflicting with any Product suppliers
+                List<String> packageNames = ProductSupplierDB.UpdateProductSuppliers(
                     productsForm.SelectedProduct, productsForm.ProductSuppliers
                     );
-                productTabLoadSuppliers(productsForm.SelectedProduct);
-            }
-            else
-            {
-                // Show an error
 
+                // Update the product (name)
+                ProductDB.UpdateProduct(productsForm.SelectedProduct);
+
+                // Show an error message if there managed to be any conflicts.
+                // This should never run because it is checked in the form!
+                if (packageNames != null && packageNames.Count > 0)
+                {
+
+                    MessageBox.Show("The following packages blocked some deletions: " +
+                        $"{string.Join(", ", packageNames.ToArray())}");
+                }
+
+                // Reload the product tab suppliers list with the updated
+                // suppliers for the selected product
+                productTabLoadSuppliers(productsForm.SelectedProduct);
+
+
+                // Update the product tab product list with the new product
+                // name and select it in the list
+                int selectedIndex = lstProductTabProducts.SelectedIndex;
+                loadProductsTab();
+                lstProductTabProducts.SelectedIndex = selectedIndex;
+            } else
+            {
+                // Show an error message
+                MessageBox.Show("Unable to edit the product or suppliers!", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
