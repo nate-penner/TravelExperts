@@ -50,7 +50,7 @@ namespace TravelExpertsData
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasAnnotation("Relational:Collation", "Latin1_General_CI_AS");
+            modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
 
             modelBuilder.Entity<Affiliation>(entity =>
             {
@@ -241,9 +241,15 @@ namespace TravelExpertsData
 
             modelBuilder.Entity<ProductsSuppliersArchive>(entity =>
             {
+                entity.HasKey(e => e.ProductSupplierId)
+                    .HasName("ProductSupplierId_PK00");
+
+                entity.Property(e => e.ProductSupplierId).ValueGeneratedNever();
+
                 entity.HasOne(d => d.ProductSupplier)
-                    .WithOne()
+                    .WithOne(p => p.ProductsSuppliersArchive)
                     .HasForeignKey<ProductsSuppliersArchive>(d => d.ProductSupplierId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("Products_Suppliers_Archive_FK00");
             });
 

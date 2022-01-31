@@ -8,14 +8,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace TravelExpertsData
 {
-    [Keyless]
     [Table("Products_Suppliers_Archive")]
     [Index(nameof(ProductSupplierId), Name = "ProductSupplierId_UQ00", IsUnique = true)]
     public partial class ProductsSuppliersArchive
     {
+        [Key]
         public int ProductSupplierId { get; set; }
 
         [ForeignKey(nameof(ProductSupplierId))]
+        [InverseProperty(nameof(ProductsSupplier.ProductsSuppliersArchive))]
         public virtual ProductsSupplier ProductSupplier { get; set; }
     }
 }

@@ -44,10 +44,19 @@ namespace TravelExpertsDataAPI
             }
         }
 
+        /// <summary>
+        /// Add a list of suppliers for a product to the database
+        /// </summary>
+        /// <author>Nate Penner</author>
+        /// <param name="product">The product being modified</param>
+        /// <param name="suppliers">The suppliers to add for this product</param>
         public static void AddProductSuppliers(Product product, List<Supplier> suppliers)
         {
+            // Connect to the database
             using (TravelExpertsContext db = new TravelExpertsContext())
             {
+                // Loop through the suppliers and add the product/supplier relationship
+                // to the database and save changes
                 suppliers.ForEach(s =>
                     {
                         ProductsSupplier ps = new ProductsSupplier();
@@ -59,11 +68,22 @@ namespace TravelExpertsDataAPI
             }
         }
 
+        /// <summary>
+        /// Gets a list of packages using a certain Product supplier
+        /// </summary>
+        /// <author>Nate Penner</author>
+        /// <param name="productsSupplier">The product supplier to search for in the packages</param>
+        /// <returns>A list of packages using this Product supplier</returns>
         public static List<Package> GetPackages(ProductsSupplier productsSupplier)
         {
+            // The list of packages to return
             List<Package> packages = null;
+
+            // Connect to the database
             using (TravelExpertsContext db = new TravelExpertsContext())
             {
+                // check for packages using this Product supplier and add any results
+                // to the packages list
                 packages = db.Packages
                     .Join(db.PackagesProductsSuppliers,
                     p => p.PackageId,
@@ -75,8 +95,16 @@ namespace TravelExpertsDataAPI
             return packages;
         }
 
+        /// <summary>
+        /// Gets a ProductsSupplier object from a passed Product and Supplier object
+        /// </summary>
+        /// <author>Nate Penner</author>
+        /// <param name="product">The product</param>
+        /// <param name="supplier">The supplier</param>
+        /// <returns>ProductsSupplier object from the database</returns>
         public static ProductsSupplier GetProductSupplier(Product product, Supplier supplier)
         {
+            // The Product supplier to return
             ProductsSupplier ps = null;
             using (TravelExpertsContext db = new TravelExpertsContext())
             {
@@ -86,24 +114,38 @@ namespace TravelExpertsDataAPI
                         .Where(ps => ps.ProductId == product.ProductId && ps.SupplierId == supplier.SupplierId)
                         .Single();
                 }
-                catch (Exception) { }
+                catch {
+                    // If there is no only a single ProductsSupplier returned, it will throw an
+                    // error and we fall through to return null
+                }
             }
             return ps;
         }
 
+        /// <summary>
+        /// Checks if a Product supplier is archived
+        /// </summary>
+        /// <author>Nate Penner</author>
+        /// <param name="productSupplier">The Product supplier to check</param>
+        /// <returns>true if archived, false if not archived</returns>
         public static bool IsArchived(ProductsSupplier productSupplier)
         {
-            bool result;
+            bool result;    // whether or not it's archived
+
+            // Connect to database
             using (TravelExpertsContext db = new TravelExpertsContext())
             {
                 try
                 {
+                    // Check for an archived Product supplier
                     db.ProductsSuppliersArchives
                         .Where(psa => psa.ProductSupplierId == productSupplier.ProductSupplierId)
                         .Single();
                     result = true;
                 } catch (Exception)
                 {
+                    // if there is not a single result in the archive table matching the
+                    // Product supplier, it will throw an error and we return false
                     result = false;
                 }
             }
@@ -117,76 +159,103 @@ namespace TravelExpertsDataAPI
         /// <author>Nate Penner</author>
         /// <param name="product">The product to be updated</param>
         /// <param name="suppliers">The new supplier list</param>
+        /// <returns>
+        ///     A list of strings containing package names that caused any 
+        ///     conflict with this update
+        /// </returns>
         public static List<string> UpdateProductSuppliers(Product product, List<Supplier> suppliers)
         {
-            List<string> packageNames = null;
+            // Steps:
+            //      1. Loop through the suppliers saved in the database, excluding archived ones
+            //          FOR EACH SAVED_SUPPLIER
+            //              IF NOT PRODUCTSSUPPLIER(Product, SAVED_SUPPLIER) in PRODUCTSSUPPLIERSARCHIVE
+            //                  IF NOT SAVED_SUPPLIER IN SUPPLIERS
+            //                      IF NOT PACKAGE USING SAVED_SUPPLIER
+            //                          ADD PRODUCTSSUPPLIER(Product, SAVED_SUPPLIER) TO ARCHIVE
+            //          NEXT
+            //                  
+            //      2. Loop through the suppliers list passed
+            //          FOR EACH SUPPLIER
+            //              IF IS_ARCHIVED(SUPPLIER)
+            //                  REMOVE FROM ARCHIVE
+            //              ELSE
+            //                  IF NOT SUPPLIER EXISTS IN PRODUCTSSUPPLIERS PS WHERE Product.ProductId == PS.ProductId
+            //                      ADD NEW PRODUCTSUPPLIER
+            //          NEXT
 
-            using (TravelExpertsContext db = new TravelExpertsContext())
+            // Conflicting package names
+            List<string> packageNames = new List<string>();
+
+            // A list of IDs of the suppliers from the new supplier list passed
+            List<int> supplierIds = suppliers.Select(s => s.SupplierId).ToList();
+
+            // A list of current suppliers for this product, retrieved from the database
+            List<Supplier> savedSuppliers = SupplierDB.GetSuppliers(product).ToList();
+
+            // The IDs of the saved suppliers
+            List<int> savedSupplierIds = savedSuppliers.Select(s => s.SupplierId).ToList();
+
+            // Archive any suppliers not in the new list
+            savedSuppliers.ForEach(s =>
             {
-                // Get all the current suppliers for the product (from the database)
-                List<int> savedSupplierIds = db.ProductsSuppliers
-                    .Join(db.Suppliers,
-                    ps => ps.SupplierId,
-                    s => s.SupplierId,
-                    (ps, s) => new { ps, s }
-                    ).Where(o => o.ps.ProductId == product.ProductId)
-                    .Select(o => o.s.SupplierId).ToList();
-
-                // Get the ids of all the suppliers in the new list for this product
-                List<int> supplierIds = suppliers.Select(s => s.SupplierId).ToList();
-
-                // Remove any product supplier records in the database for suppliers that
-                // are not in the passed supplier list
-                savedSupplierIds.ForEach(s =>
+                if (!supplierIds.Contains(s.SupplierId))
                 {
-                    if (!supplierIds.Contains(s)) {
-                        ProductsSupplier ps = db.ProductsSuppliers
-                        .Where(ps => ps.SupplierId == s && ps.ProductId == product.ProductId)
-                        .Single();
+                    // Try to archive this product supplier, getting any conflicting package names
+                    // if not possible
+                    List<Package> packages = ProductsSuppliersArchiveDB.ArchiveProductsSupplier(product, s);
 
-                        List<int> ppsIds = db.PackagesProductsSuppliers
-                        .Where(pps => pps.ProductSupplierId == ps.ProductSupplierId)
-                        .Select(pps => pps.ProductSupplierId).ToList();
+                    if (packages != null && packages.Count > 0)
+                        packages.ForEach(pkgName => packageNames.Add(pkgName.PkgName));
+                }
+            });
 
-                        if (ppsIds.Contains(ps.ProductSupplierId))
-                        {
-                            // A package is using this product supplier
-                            // Don't remove it, add the packages using it
-                            // to the packageNames list
-                            if (packageNames == null)
-                                packageNames = new List<string>();
+            // Add any suppliers not saved in the database
+            suppliers.ForEach(s =>
+            {
+                // Get the ProductsSupplier for this supplier from the database
+                ProductsSupplier ps = ProductSupplierDB.GetProductsSupplier(product, s);
 
-                            db.Packages
-                            .Join(db.PackagesProductsSuppliers,
-                            p => p.PackageId,
-                            pps => pps.PackageId,
-                            (p, pps) => new { p.PkgName, pps.ProductSupplierId })
-                            .Where(o => o.ProductSupplierId == ps.ProductSupplierId)
-                            .Select(o => o.PkgName).ToList()
-                            .ForEach(s => packageNames.Add(s));
-                        } else
-                        {
-                            db.ProductsSuppliers.Remove(ps);
-                        }
-                    }
-                });
-                db.SaveChanges();
-
-                // Add any product suppliers that are in the new list, but weren't in the database
-                supplierIds.ForEach(s =>
+                // If it's null, it wasn't in the databse
+                if (ps == null)
                 {
-                    if (!savedSupplierIds.Contains(s))
+                    // Add it to the database
+                    ProductSupplierDB.AddProductSupplier(product, s);
+                } else
+                {
+                    // If it's archived, just unarchive it rather than creating a new ProductsSupplier
+                    if (IsArchived(ps))
                     {
-                        ProductsSupplier ps = new ProductsSupplier();
-                        ps.ProductId = product.ProductId;
-                        ps.SupplierId = s;
-                        db.ProductsSuppliers.Add(ps);
+                        Unarchive(ps);
                     }
-                });
-                db.SaveChanges();
-            }
+                }
+            });
 
             return packageNames;
+        }
+
+        /// <summary>
+        /// Removes a Product supplier from the archive table, making it active again
+        /// </summary>
+        /// <author>Nate Penner</author>
+        /// <param name="ps">The Product supplier to reactivate</param>
+        public static void Unarchive(ProductsSupplier ps)
+        {
+            try
+            {
+                // Connect to the databse
+                using (TravelExpertsContext db = new TravelExpertsContext())
+                {
+                    // Get the ProductsSuppliersArchive object to delete
+                    ProductsSuppliersArchive psa = db.ProductsSuppliersArchives.Find(ps.ProductSupplierId);
+
+                    // Remove it and save
+                    db.ProductsSuppliersArchives.Remove(psa);
+                    db.SaveChanges();
+                }
+            } catch (DbUpdateException ex)
+            {
+                Handles.HandleDbUpdateException(ex);
+            }
         }
 
         /// <summary>
@@ -197,6 +266,7 @@ namespace TravelExpertsDataAPI
         public static void RemoveProductSupplier(Product product, Supplier supplier)
         {
             // Remove this relationship from products_suppliers table
+            throw new NotImplementedException();
         }
 
         // Author: Alex Cress
