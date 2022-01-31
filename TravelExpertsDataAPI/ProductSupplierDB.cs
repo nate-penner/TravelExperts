@@ -165,24 +165,6 @@ namespace TravelExpertsDataAPI
         /// </returns>
         public static List<string> UpdateProductSuppliers(Product product, List<Supplier> suppliers)
         {
-            // Steps:
-            //      1. Loop through the suppliers saved in the database, excluding archived ones
-            //          FOR EACH SAVED_SUPPLIER
-            //              IF NOT PRODUCTSSUPPLIER(Product, SAVED_SUPPLIER) in PRODUCTSSUPPLIERSARCHIVE
-            //                  IF NOT SAVED_SUPPLIER IN SUPPLIERS
-            //                      IF NOT PACKAGE USING SAVED_SUPPLIER
-            //                          ADD PRODUCTSSUPPLIER(Product, SAVED_SUPPLIER) TO ARCHIVE
-            //          NEXT
-            //                  
-            //      2. Loop through the suppliers list passed
-            //          FOR EACH SUPPLIER
-            //              IF IS_ARCHIVED(SUPPLIER)
-            //                  REMOVE FROM ARCHIVE
-            //              ELSE
-            //                  IF NOT SUPPLIER EXISTS IN PRODUCTSSUPPLIERS PS WHERE Product.ProductId == PS.ProductId
-            //                      ADD NEW PRODUCTSUPPLIER
-            //          NEXT
-
             // Conflicting package names
             List<string> packageNames = new List<string>();
 
