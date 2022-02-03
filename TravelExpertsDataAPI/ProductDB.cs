@@ -214,5 +214,47 @@ namespace TravelExpertsDataAPI
 
             return products;
         }
+
+        public static List<Product> GetProductsForSupplierExcludingPackage(Package selectedPackage, Supplier selectedSupplier)
+        {
+            List<Product> products = null;
+
+            try
+            {
+                using (TravelExpertsContext db = new TravelExpertsContext())
+                {
+                    //Selects all Products that have a relationship with the selectedSupplier.
+                    //Removes any matching entries returned from the subquery.
+                    products = db.Products.Join(db.ProductsSuppliers,
+                                                  p => p.ProductId,
+                                                  ps => ps.ProductId,
+                                                  (p, ps) => new { p, ps })
+                                            .Where(o => o.ps.SupplierId == selectedSupplier.SupplierId)
+                                            .Select(k => k.p)
+                                            .Except(//Subquery: Selects all Products that have a relationship with the selectedPackage.
+                                                    db.Products.Join(db.ProductsSuppliers,
+                                                                      p => p.ProductId,
+                                                                      ps => ps.ProductId,
+                                                                      (p, ps) => new { p, ps })
+                                                                .Join(db.PackagesProductsSuppliers,
+                                                                      ps1 => ps1.ps.ProductSupplierId,
+                                                                      pps => pps.ProductSupplierId,
+                                                                      (ps1, pps) => new { ps1, pps })
+                                                                .Where(o => o.pps.PackageId == selectedPackage.PackageId)
+                                                                .Select(o => o.ps1.p))
+                                            .ToList();
+                }
+            }
+            catch (DbUpdateException ex)
+            {
+                Handles.HandleDbUpdateException(ex);
+            }
+            catch (Exception ex)
+            {
+                Handles.LogToDebug(ex);
+            }
+
+            return products;
+        }
     }
 }

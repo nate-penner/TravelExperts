@@ -192,7 +192,7 @@ namespace TravelExpertsDataAPI
         /// <param name="package">the Package context</param>
         /// <param name="product">the Product context</param>
         /// <returns>the Suppliers for the given parameters, or null if there are none</returns>
-        public static List<Supplier> GetSuppliersForPackageProductExcluding(Package package, Product product)
+        public static List<Supplier> GetSuppliersForProductExcludingPackage(Package package, Product product)
         {
             List<Supplier> suppliers = null;
             try
