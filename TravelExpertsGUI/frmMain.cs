@@ -274,6 +274,7 @@ namespace TravelExpertsGUI
             PackageTabRenderPackages();
             PackageTabRenderProducts();
             PackageTabRenderSuppliers();
+            PackageTabRenderProductSuppliers();
         }
 
         //////////////////////////////////////////////// Package Tab Code \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -353,7 +354,7 @@ namespace TravelExpertsGUI
 
         // Author: Alex Cress
         /// <summary>
-        /// Deletes the selected package from the database.
+        /// Deletes the selected Package from the database.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -383,14 +384,14 @@ namespace TravelExpertsGUI
 
         // Author: Alex Cress
         /// <summary>
-        /// Adds a product to the selected package.
+        /// Adds a ProductSupplier to the selected Package.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnPackageTabAddProduct_Click(object sender, EventArgs e)
+        private void btnPackageTabAddProductSupplier_Click(object sender, EventArgs e)
         {
             //Get selected values
-            Package selectedPackage = (Package)lstPackageTabPackages.SelectedValue;
+            Package selectedPackage = PackageTabGetSelectedPackage();
             Product selectedProduct = PackageTabGetSelectedProduct();
             Supplier selectedSupplier = PackageTabGetSelectedSupplier();
             ProductsSupplier productsSupplier;
@@ -403,35 +404,31 @@ namespace TravelExpertsGUI
                 {
                     PackageDB.AddProduct(selectedPackage, productsSupplier);
 
-                    PackageTabRenderProducts();
+                    PackageTabRenderSuppliers();
+                    PackageTabRenderProductSuppliers();
                 }
             }
         }
 
         // Author: Alex Cress
         /// <summary>
-        /// Removes the selected Product from the selected Package.
+        /// Removes the selected ProductSupplier from the selected Package.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnPackageTabRemoveProduct_Click(object sender, EventArgs e)
+        private void btnPackageTabRemoveProductSupplier_Click(object sender, EventArgs e)
         {
             //Get selected values
-            Package selectedPackage = (Package)lstPackageTabPackages.SelectedValue;
-            Product selectedProduct = PackageTabGetSelectedProduct();
-            Supplier selectedSupplier = PackageTabGetSelectedSupplier();
-            ProductsSupplier productsSupplier;
+            Package selectedPackage = PackageTabGetSelectedPackage();
+            ProductsSupplier selectedProductsSupplier = PackageTabGetSelectedProductsSupplier().productsSupplier;
 
-            if (selectedPackage != null && selectedProduct != null)
+            if (selectedProductsSupplier != null)
             {
-                productsSupplier = ProductSupplierDB.GetProductsSupplier(selectedProduct, selectedSupplier);
+                PackageDB.RemoveProductsSupplier(selectedPackage, selectedProductsSupplier);
 
-                if (productsSupplier != null)
-                {
-                    PackageDB.RemoveProduct(selectedPackage, productsSupplier);
+                PackageTabRenderProductSuppliers();
+                PackageTabRenderSuppliers();
 
-                    PackageTabRenderProducts();
-                }
             }
         }
 
@@ -445,26 +442,9 @@ namespace TravelExpertsGUI
         /// <param name="e"></param>
         private void lstPackageTabPackages_SelectedIndexChanged(object sender, EventArgs e)
         {
+            PackageTabRenderPackageDetails();
             PackageTabRenderProducts();
-            PackageTabRenderSuppliers();
-        }
-
-        // Author: Alex Cress
-        /// <summary>
-        /// Ensures only one value is selected between its sister table lstPackageTabAvailableProducts and itself.
-        /// Updates Suppliers based off of selected package.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void lstPackageTabActiveProducts_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            //Remove selection from sister table
-            if (lstPackageTabActiveProducts.SelectedIndex != -1) //Avoid cancelling out
-            {
-                lstPackageTabAvailableProducts.SelectedIndex = -1;
-            }
-
-            PackageTabRenderSuppliers();
+            PackageTabRenderProductSuppliers();
         }
 
         // Author: Alex Cress
@@ -474,14 +454,42 @@ namespace TravelExpertsGUI
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void lstPackageTabAvailableProducts_SelectedIndexChanged(object sender, EventArgs e)
+        private void lstPackageTabProducts_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //Remove selection from sister table
-            if (lstPackageTabAvailableProducts.SelectedIndex != -1) //Avoid cancelling out
+            if (radPackageTabByProduct.Checked)
             {
-                lstPackageTabActiveProducts.SelectedIndex = -1;
+                PackageTabRenderSuppliers();
+            }
+            else if (radPackageTabBySupplier.Checked)
+            {
+                //Do nothing
+            }
+            else
+            {
+                throw new NotImplementedException();
             }
 
+        }
+
+        private void lstPackageTabSuppliers_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (radPackageTabByProduct.Checked)
+            {
+                //Do nothing
+            }
+            else if (radPackageTabBySupplier.Checked)
+            {
+                PackageTabRenderProducts();
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        private void radGrpPackageTabAddProductsSupplier_CheckChanged(object sender, EventArgs e)
+        {
+            PackageTabRenderProducts();
             PackageTabRenderSuppliers();
         }
 
@@ -496,9 +504,10 @@ namespace TravelExpertsGUI
             //Get all packages
             List<Package> packages = PackageDB.GetPackages();
 
-            //Render packages
+            //Render packages ListBox
             lstPackageTabPackages.DataSource = packages;
             lstPackageTabPackages.DisplayMember = "PkgName";
+
         }
 
         // Author: Alex Cress
@@ -518,18 +527,29 @@ namespace TravelExpertsGUI
         /// </summary>
         private void PackageTabRenderProducts()
         {
-            Package selectedPackage = PackageTabGetSelectedPackage();
+            List<Product> availableProducts = null;
 
-            //Get products for selected Package
-            List<Product> activeProducts = TravelExpertsDataAPI.ProductDB.GetProducts(selectedPackage);
+            if (radPackageTabByProduct.Checked)
+            {
+                //Get all products
+                availableProducts = ProductDB.GetProducts();
+            }
+            else if (radPackageTabBySupplier.Checked)
+            {
+                Supplier selectedSupplier = PackageTabGetSelectedSupplier();
+                Package selectedPackage = PackageTabGetSelectedPackage();
 
-            //Get products not in selected Package
-            List<Product> availableProducts = TravelExpertsDataAPI.ProductDB.GetProductsExcluding(selectedPackage);
+                //Get Products for selected Supplier excluding those already in the selected Package
+                if (selectedSupplier != null)
+                {
+                    availableProducts = ProductDB.GetProductsForSupplierExcludingPackage(selectedPackage, selectedSupplier);
+                }
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
 
-            //Render tables
-            lstPackageTabActiveProducts.DataSource = activeProducts;
-            lstPackageTabActiveProducts.DisplayMember = "ProdName";
-            lstPackageTabActiveProducts.SelectedIndex = -1;
 
             lstPackageTabAvailableProducts.DataSource = availableProducts;
             lstPackageTabAvailableProducts.DisplayMember = "ProdName";
@@ -538,60 +558,90 @@ namespace TravelExpertsGUI
 
         // Author: Alex Cress
         /// <summary>
-        /// Renders Supplier tables using selected values from Product tables
+        /// Renders Supplier table using selected values from Product tables
         /// </summary>
         private void PackageTabRenderSuppliers()
         {
-            //Get selected values from lists
-            Package selectedPackage = PackageTabGetSelectedPackage();
-            Product selectedProduct = PackageTabGetSelectedProduct();
-
-            //Get Suppliers for Product
-            List<Supplier> activeSuppliers = null;
             List<Supplier> availableSuppliers = null;
 
-            if (selectedPackage != null && selectedProduct != null)
+            if (radPackageTabByProduct.Checked)
             {
-                activeSuppliers = SupplierDB.GetSuppliersForPackageProduct(selectedPackage, selectedProduct);
-                availableSuppliers = SupplierDB.GetSuppliersForPackageProductExcluding(selectedPackage, selectedProduct);
+                //Get selected values from lists
+                Package selectedPackage = PackageTabGetSelectedPackage();
+                Product selectedProduct = PackageTabGetSelectedProduct();
+
+                //Get Suppliers for selected Product excluding those already in the selected Package               
+                if (selectedPackage != null && selectedProduct != null)
+                {
+                    availableSuppliers = SupplierDB.GetSuppliersForProductExcludingPackage(selectedPackage, selectedProduct);
+                }
+            }
+            else if (radPackageTabBySupplier.Checked)
+            {
+                //Get all Suppliers
+                availableSuppliers = SupplierDB.GetSuppliers();
+            }
+            else
+            {
+                //Someone added a radio button to this groupbox
+                throw new NotImplementedException();
             }
 
-            //Update supplier table
-            lstPackageTabActiveSuppliers.DataSource = activeSuppliers;
-            lstPackageTabActiveSuppliers.DisplayMember = "SupName";
-            lstPackageTabActiveSuppliers.SelectedIndex = -1;
-
+            //Render ListBox
             lstPackageTabAvailableSuppliers.DataSource = availableSuppliers;
             lstPackageTabAvailableSuppliers.DisplayMember = "SupName";
-            lstPackageTabAvailableSuppliers.SelectedIndex = -1;
+        }
 
+        private void PackageTabRenderProductSuppliers()
+        {
+            //Get ProductSuppliers for selected package
+            Package selectedPackage = PackageTabGetSelectedPackage();
+            List<ProductsSupplierDTO> DTOs = PackageDB.GetProductsSupplierDTOs(selectedPackage);
+
+            //Render ProductSuppliers
+            gvPackageTabProductsSupplier.DataSource = DTOs;
+            gvPackageTabProductsSupplier.Columns["SupName"].Width = 250;
+            gvPackageTabProductsSupplier.Columns["ProdName"].Width = 150;
+        }
+
+        private void PackageTabRenderPackageDetails()
+        {
+            Package selectedPackage = (Package)lstPackageTabPackages.SelectedValue;
+
+            //Populate fields
+            lblPackageTabPackageName.Text = selectedPackage.PkgName;
+            txtPackageTabPackageDescription.Text = selectedPackage.PkgDesc;
+            txtPackageTabPackageStartDate.Text = ((DateTime)selectedPackage.PkgStartDate).ToShortDateString();
+            txtPackageTabPackageEndDate.Text = ((DateTime)selectedPackage.PkgEndDate).ToShortDateString();
+            txtPackageTabPackageBasePrice.Text = selectedPackage.PkgBasePrice.ToString("c");
+            txtPackageTabPackageAgencyCommission.Text = ((Decimal)selectedPackage.PkgAgencyCommission).ToString("c");
         }
 
         //************************************************** Getters/Helpers *************************************************************
 
         // Author: Alex Cress
         /// <summary>
-        /// Gets the selected Supplier from the Supplier tables.
+        /// Gets the selected Supplier from the Supplier ListBox.
         /// </summary>
         /// <returns>the selected Package, or null if none</returns>
         private Supplier PackageTabGetSelectedSupplier()
         {
-            return lstPackageTabAvailableSuppliers.SelectedIndex != -1 ? (Supplier) lstPackageTabAvailableSuppliers.SelectedValue : (Supplier) lstPackageTabActiveSuppliers.SelectedValue;
+            return (Supplier) lstPackageTabAvailableSuppliers.SelectedValue;
         }
 
         // Author: Alex Cress
         /// <summary>
-        /// Gets the selected Product from the Product tables.
+        /// Gets the selected Product from the Product ListBox.
         /// </summary>
         /// <returns>the selected Package, or null if none</returns>
         private Product PackageTabGetSelectedProduct()
         {
-            return lstPackageTabAvailableProducts.SelectedIndex != -1 ? (Product)lstPackageTabAvailableProducts.SelectedValue : (Product)lstPackageTabActiveProducts.SelectedValue;
+            return (Product)lstPackageTabAvailableProducts.SelectedValue;
         }
 
         // Author: Alex Cress
         /// <summary>
-        /// Gets the selected Package from the Package tables.
+        /// Gets the selected Package from the Package ListBox.
         /// </summary>
         /// <returns>the selected Package, or null if none</returns>
         private Package PackageTabGetSelectedPackage()
@@ -599,9 +649,21 @@ namespace TravelExpertsGUI
             return (Package) lstPackageTabPackages.SelectedValue;
         }
 
+        // Author: Alex Cress
+        /// <summary>
+        /// Gets the selected ProductsSupplierDTO from the ProductsSupplier ListBox.
+        /// </summary>
+        /// <returns>the selected ProductsSupplierDTO, or null if none selected</returns>
+        private ProductsSupplierDTO PackageTabGetSelectedProductsSupplier()
+        {
+            return (ProductsSupplierDTO) gvPackageTabProductsSupplier.CurrentRow.DataBoundItem;
+        }
+
         private void frmMain_FormClosing(Object sender, FormClosingEventArgs e)
         {
             EnterPage.Close();
         }
+
+
     }
 }

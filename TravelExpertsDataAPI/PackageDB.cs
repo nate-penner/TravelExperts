@@ -141,11 +141,11 @@ namespace TravelExpertsDataAPI
 
         // Author: Alex Cress
         /// <summary>
-        /// Removes the Product from the given Package
+        /// Removes the ProductsSupplier from the given Package
         /// </summary>
         /// <param name="package">the Package context</param>
         /// <param name="productsSupplier">the Product to be removed</param>
-        public static void RemoveProduct(Package package, ProductsSupplier productsSupplier)
+        public static void RemoveProductsSupplier(Package package, ProductsSupplier productsSupplier)
         {
             using (TravelExpertsContext db = new TravelExpertsContext())
             {
@@ -202,6 +202,82 @@ namespace TravelExpertsDataAPI
                     Handles.LogToDebug(ex);
                 }
             }
+        }
+
+        public static List<ProductsSupplierDTO> GetProductsSupplierDTOs(Package package)
+        {
+            List<ProductsSupplierDTO> DTOs = new List<ProductsSupplierDTO>();
+
+
+            //select s.SupplierId, SupName, p.ProductId, ProdName, ps.ProductSupplierId
+            //from Suppliers s
+            //join Products_Suppliers ps
+            //ON s.SupplierId = ps.SupplierId
+            //join Products p
+            //ON p.ProductId = ps.ProductId
+            //join Packages_Products_Suppliers pps
+            //ON pps.ProductSupplierId = ps.ProductSupplierId
+            //where PackageId = 1
+
+            using (TravelExpertsContext db = new TravelExpertsContext())
+            {
+                try
+                {
+                    var result = db.Suppliers.Join(db.ProductsSuppliers,
+                                                s => s.SupplierId,
+                                                ps => ps.SupplierId,
+                                                (s, ps) => new { s, ps })
+                                          .Join(db.Products,
+                                                ps1 => ps1.ps.ProductId,
+                                                p => p.ProductId,
+                                                (ps1, p) => new { ps1, p })
+                                          .Join(db.PackagesProductsSuppliers,
+                                                ps2 => ps2.ps1.ps.ProductSupplierId,
+                                                pps => pps.ProductSupplierId,
+                                                (ps2, pps) => new { ps2, pps })
+                                          .Where(pps2 => pps2.pps.PackageId == package.PackageId)
+                                          .Select(o => new
+                                          {
+                                              ProductId = o.ps2.p.ProductId,
+                                              ProdName = o.ps2.p.ProdName,
+                                              SupplierId = o.ps2.ps1.s.SupplierId,
+                                              SupName = o.ps2.ps1.s.SupName,
+                                              ProductSupplierId = o.pps.ProductSupplierId
+                                          });
+
+
+                    foreach (var ele in result)
+                    {
+                        Product p = new Product();
+                        p.ProductId = ele.ProductId;
+                        p.ProdName = ele.ProdName;
+
+                        Supplier s = new Supplier();
+                        s.SupplierId = ele.SupplierId;
+                        s.SupName = ele.SupName;
+
+                        ProductsSupplier ps = new ProductsSupplier();
+                        ps.ProductSupplierId = ele.ProductSupplierId;
+
+                        ProductsSupplierDTO dto = new ProductsSupplierDTO(p, s, ps);
+                        DTOs.Add(dto);
+                    }
+
+
+                }
+                catch (DbUpdateException ex)
+                {
+                    Handles.HandleDbUpdateException(ex);
+                }
+                catch (Exception ex)
+                {
+                    Handles.LogToDebug(ex);
+                }
+            }
+
+            
+
+            return DTOs;
         }
     }
 }
