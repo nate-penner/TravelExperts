@@ -48,7 +48,8 @@ namespace TravelExpertsDataAPI
             {
                 using (TravelExpertsContext db = new TravelExpertsContext())
                 {
-                    products = db.ProductsSuppliers.Join(
+                    products = db.ProductsSuppliers.Where(ps => !db.ProductsSuppliersArchives.Select(psa => psa.ProductSupplierId).ToList().Contains(ps.ProductSupplierId))
+                                                    .Join(
                                                          db.Products,
                                                          p => p.ProductId,
                                                          ps => ps.ProductId,

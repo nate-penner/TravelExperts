@@ -73,6 +73,14 @@ namespace TravelExpertsGUI
             lstSupplierTabSuppliers.DisplayMember = "SupName";
         }
 
+        private void SupplierTabRenderProductsList(List<Product> product)
+        {
+            txtSupplierTabSupplierId.Text = lstSupplierTabsupplier.SupplierId.ToString();
+            txtSupplierTabProductCount.Text = product.Count().ToString();
+            lstSupplierTabProducts.DataSource = product;
+            lstSupplierTabProducts.DisplayMember = "ProdName";
+        }
+
         // Populates the tab with details about selected supplier
         // Author: Daniel Palmer
         private void lstSupplierTabSuppliers_SelectedIndexChanged(object sender, EventArgs e)
@@ -86,10 +94,7 @@ namespace TravelExpertsGUI
                 List<Product> product = TravelExpertsDataAPI.ProductDB.GetProducts(lstSupplierTabsupplier);
 
                 // Displays all the supplier and product values to the form
-                txtSupplierTabSupplierId.Text = lstSupplierTabsupplier.SupplierId.ToString();
-                txtSupplierTabProductCount.Text = product.Count().ToString();
-                lstSupplierTabProducts.DataSource = product;
-                lstSupplierTabProducts.DisplayMember = "ProdName";
+                SupplierTabRenderProductsList(product);
             }
 
 
@@ -190,6 +195,10 @@ namespace TravelExpertsGUI
                 int selectedIndex = lstProductTabProducts.SelectedIndex;
                 loadProductsTab();
                 lstProductTabProducts.SelectedIndex = selectedIndex;
+                // Updates the Product list in the supplier tab. Fixes edge case where supplier products do not update
+                // when the selected supplier is removed as a supplier of a product
+                List<Product> SupplierTabproducts = TravelExpertsDataAPI.ProductDB.GetProducts(lstSupplierTabsupplier);
+                SupplierTabRenderProductsList(SupplierTabproducts);
             } else
             {
                 // Show an error message
