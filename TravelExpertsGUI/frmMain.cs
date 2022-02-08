@@ -142,7 +142,7 @@ namespace TravelExpertsGUI
                 // Reload the products tab supplier list for the new product
                 productTabLoadSuppliers(productsForm.SelectedProduct);
             }
-            else
+            else if (result != DialogResult.Cancel)
             {
                 // Show an error message
                 MessageBox.Show("Unable to add the product!", "Error",
@@ -199,7 +199,7 @@ namespace TravelExpertsGUI
                 // when the selected supplier is removed as a supplier of a product
                 List<Product> SupplierTabproducts = TravelExpertsDataAPI.ProductDB.GetProducts(lstSupplierTabsupplier);
                 SupplierTabRenderProductsList(SupplierTabproducts);
-            } else
+            } else if (result != DialogResult.Cancel)
             {
                 // Show an error message
                 MessageBox.Show("Unable to edit the product or suppliers!", "Error",
