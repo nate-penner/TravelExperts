@@ -29,17 +29,7 @@ namespace TravelExpertsDataAPI
             // Get suppliers from db
             using (TravelExpertsContext db = new TravelExpertsContext())
             {
-                try
-                {
-                    suppliers = db.Suppliers.OrderBy(o => o.SupName).ToList();
-                }
-                catch (DbUpdateException ex)
-                {
-                    Handles.HandleDbUpdateException(ex);
-                }
-                catch (Exception ex)
-                {
-                }
+                suppliers = db.Suppliers.OrderBy(o => o.SupName).ToList();
             }
 
             return suppliers;
@@ -98,21 +88,8 @@ namespace TravelExpertsDataAPI
         {
             using (TravelExpertsContext db = new TravelExpertsContext())
             {
-                try
-                {
-
-                    db.Suppliers.Add(supplier);
-                    db.SaveChanges();
-
-                }
-                catch (DbUpdateConcurrencyException ex) // concurrency error
-                {
-                    Handles.HandleConcurrencyError(ex, db, supplier);
-                }
-                catch (DbUpdateException ex)
-                {
-                    Handles.HandleDbUpdateException(ex);
-                }
+                db.Suppliers.Add(supplier);
+                db.SaveChanges();
             }
 
         }
@@ -126,21 +103,9 @@ namespace TravelExpertsDataAPI
 
             using (TravelExpertsContext db = new TravelExpertsContext())
             {
-                try
-                {
-                    Supplier dbSupplier = db.Suppliers.Find(supplier.SupplierId);
-                    dbSupplier.SupName = supplier.SupName;
-                    db.SaveChanges();
-                }
-                catch (DbUpdateConcurrencyException ex) // concurrency error
-                {
-                    Handles.HandleConcurrencyError(ex, db, supplier);
-                }
-                catch (DbUpdateException ex)
-                {
-                    Handles.HandleDbUpdateException(ex);
-                }
-
+                Supplier dbSupplier = db.Suppliers.Find(supplier.SupplierId);
+                dbSupplier.SupName = supplier.SupName;
+                db.SaveChanges();
             }
         }
 
@@ -154,8 +119,6 @@ namespace TravelExpertsDataAPI
         public static List<Supplier> GetSuppliersForPackageProduct(Package package, Product product)
         {
             List<Supplier> suppliers = null;
-            try
-            {
                 using (TravelExpertsContext db = new TravelExpertsContext())
                 {
                     //Joins Suppliers, ProductSuppliers, and PackagesProductSuppliers, then filters based on the Package and Product IDs
@@ -173,16 +136,6 @@ namespace TravelExpertsDataAPI
                                             .Select(l => l.pps.s)
                                             .ToList();
                 }
-            }
-            catch (DbUpdateException ex)
-            {
-                Handles.HandleDbUpdateException(ex);
-            }
-            catch (Exception ex)
-            {
-                Handles.LogToDebug(ex);
-            }
-
             return suppliers;
         }
         // Author: Alex Cress
@@ -195,8 +148,6 @@ namespace TravelExpertsDataAPI
         public static List<Supplier> GetSuppliersForProductExcludingPackage(Package package, Product product)
         {
             List<Supplier> suppliers = null;
-            try
-            {
                 using (TravelExpertsContext db = new TravelExpertsContext())
                 {
                     //Joins Suppliers and ProductsSuppliers, filters it on ProductId, removes any entries that exist in the subquery
@@ -223,16 +174,6 @@ namespace TravelExpertsDataAPI
                                                                 .Select(o => o.ps1.s))
                                             .ToList();
                 }
-            }
-            catch (DbUpdateException ex)
-            {
-                Handles.HandleDbUpdateException(ex);
-            }
-            catch (Exception ex)
-            {
-                Handles.LogToDebug(ex);
-            }
-
             return suppliers;
         }
     }

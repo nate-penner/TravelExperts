@@ -44,28 +44,19 @@ namespace TravelExpertsDataAPI
         public static List<Product> GetProducts(Supplier supplier)
         {
             List<Product> products = null;
-            try
+            using (TravelExpertsContext db = new TravelExpertsContext())
             {
-                using (TravelExpertsContext db = new TravelExpertsContext())
-                {
-                    products = db.ProductsSuppliers.Where(ps => !db.ProductsSuppliersArchives.Select(psa => psa.ProductSupplierId).ToList().Contains(ps.ProductSupplierId))
-                                                    .Join(
-                                                         db.Products,
-                                                         p => p.ProductId,
-                                                         ps => ps.ProductId,
-                                                         (ps, p) => new { p, ps })
-                                                    .Where(o => o.ps.SupplierId == supplier.SupplierId)
-                                                    .Select(o => o.p)
-                                                    .ToList();
-                }
-
-                return products;
+                products = db.ProductsSuppliers.Where(ps => !db.ProductsSuppliersArchives.Select(psa => psa.ProductSupplierId).ToList().Contains(ps.ProductSupplierId))
+                                                .Join(
+                                                        db.Products,
+                                                        p => p.ProductId,
+                                                        ps => ps.ProductId,
+                                                        (ps, p) => new { p, ps })
+                                                .Where(o => o.ps.SupplierId == supplier.SupplierId)
+                                                .Select(o => o.p)
+                                                .ToList();
             }
-            catch (DbUpdateException ex)
-            {
-                Handles.HandleDbUpdateException(ex);
-                return products;
-            }
+            return products;
         }
 
         /// <summary>
@@ -130,41 +121,28 @@ namespace TravelExpertsDataAPI
         public static List<Product> GetProducts(Package package)
         {
             List<Product> products = null;
-
-            try
+            using (TravelExpertsContext db = new TravelExpertsContext())
             {
-                using (TravelExpertsContext db = new TravelExpertsContext())
-                {
-                    //Joins the Package and Product tables, selects all Products that refer to the given PackageId
-                    products = db.Packages.Join(
-                                                db.PackagesProductsSuppliers,
-                                                p => p.PackageId,
-                                                pps => pps.PackageId,
-                                                (p, pps) => new { p, pps })
-                                           .Join(
-                                                db.ProductsSuppliers,
-                                                pps1 => pps1.pps.ProductSupplierId,
-                                                ps => ps.ProductSupplierId,
-                                                (pps1, ps) => new { pps1, ps })
-                                           .Join(
-                                                db.Products,
-                                                ps1 => ps1.ps.ProductId,
-                                                pr => pr.ProductId,
-                                                (ps1, pr) => new { ps1, pr })
-                                           .Where(o => o.ps1.pps1.p.PackageId == package.PackageId)
-                                           .Select(o => o.pr)
-                                           .ToList();
+                //Joins the Package and Product tables, selects all Products that refer to the given PackageId
+                products = db.Packages.Join(
+                                            db.PackagesProductsSuppliers,
+                                            p => p.PackageId,
+                                            pps => pps.PackageId,
+                                            (p, pps) => new { p, pps })
+                                        .Join(
+                                            db.ProductsSuppliers,
+                                            pps1 => pps1.pps.ProductSupplierId,
+                                            ps => ps.ProductSupplierId,
+                                            (pps1, ps) => new { pps1, ps })
+                                        .Join(
+                                            db.Products,
+                                            ps1 => ps1.ps.ProductId,
+                                            pr => pr.ProductId,
+                                            (ps1, pr) => new { ps1, pr })
+                                        .Where(o => o.ps1.pps1.p.PackageId == package.PackageId)
+                                        .Select(o => o.pr)
+                                        .ToList();
                 }
-            }
-            catch (DbUpdateException ex)
-            {
-                Handles.HandleDbUpdateException(ex);
-            }
-            catch (Exception ex)
-            {
-                Handles.LogToDebug(ex);
-            }
-
             return products;
         }
 
@@ -177,40 +155,28 @@ namespace TravelExpertsDataAPI
         public static List<Product> GetProductsExcluding(Package package)
         {
             List<Product> products = null;
-
-            try
+            using (TravelExpertsContext db = new TravelExpertsContext())
             {
-                using (TravelExpertsContext db = new TravelExpertsContext())
-                {
-                    //Selects all Products, joins the Package and Product tables in a subquery, selects all Products that refer to the given PackageId and excludes them from the result set
-                    products = db.Products.Except(//Subquery
-                                                db.Packages.Join( 
-                                                    db.PackagesProductsSuppliers,
-                                                    p => p.PackageId,
-                                                    pps => pps.PackageId,
-                                                    (p, pps) => new { p, pps })
-                                               .Join(
-                                                    db.ProductsSuppliers,
-                                                    pps1 => pps1.pps.ProductSupplierId,
-                                                    ps => ps.ProductSupplierId,
-                                                    (pps1, ps) => new { pps1, ps })
-                                               .Join(
-                                                    db.Products,
-                                                    ps1 => ps1.ps.ProductId,
-                                                    pr => pr.ProductId,
-                                                    (ps1, pr) => new { ps1, pr })
-                                               .Where(o => o.ps1.pps1.p.PackageId == package.PackageId)
-                                               .Select(o => o.pr))
-                                           .ToList();
-                }
-            }
-            catch (DbUpdateException ex)
-            {
-                Handles.HandleDbUpdateException(ex);
-            }
-            catch (Exception ex)
-            {
-                Handles.LogToDebug(ex);
+                //Selects all Products, joins the Package and Product tables in a subquery, selects all Products that refer to the given PackageId and excludes them from the result set
+                products = db.Products.Except(//Subquery
+                                            db.Packages.Join( 
+                                                db.PackagesProductsSuppliers,
+                                                p => p.PackageId,
+                                                pps => pps.PackageId,
+                                                (p, pps) => new { p, pps })
+                                            .Join(
+                                                db.ProductsSuppliers,
+                                                pps1 => pps1.pps.ProductSupplierId,
+                                                ps => ps.ProductSupplierId,
+                                                (pps1, ps) => new { pps1, ps })
+                                            .Join(
+                                                db.Products,
+                                                ps1 => ps1.ps.ProductId,
+                                                pr => pr.ProductId,
+                                                (ps1, pr) => new { ps1, pr })
+                                            .Where(o => o.ps1.pps1.p.PackageId == package.PackageId)
+                                            .Select(o => o.pr))
+                                        .ToList();
             }
 
             return products;
@@ -219,42 +185,29 @@ namespace TravelExpertsDataAPI
         public static List<Product> GetProductsForSupplierExcludingPackage(Package selectedPackage, Supplier selectedSupplier)
         {
             List<Product> products = null;
-
-            try
+            using (TravelExpertsContext db = new TravelExpertsContext())
             {
-                using (TravelExpertsContext db = new TravelExpertsContext())
-                {
-                    //Selects all Products that have a relationship with the selectedSupplier.
-                    //Removes any matching entries returned from the subquery.
-                    products = db.Products.Join(db.ProductsSuppliers,
-                                                  p => p.ProductId,
-                                                  ps => ps.ProductId,
-                                                  (p, ps) => new { p, ps })
-                                            .Where(o => o.ps.SupplierId == selectedSupplier.SupplierId)
-                                            .Select(k => k.p)
-                                            .Except(//Subquery: Selects all Products that have a relationship with the selectedPackage.
-                                                    db.Products.Join(db.ProductsSuppliers,
-                                                                      p => p.ProductId,
-                                                                      ps => ps.ProductId,
-                                                                      (p, ps) => new { p, ps })
-                                                                .Join(db.PackagesProductsSuppliers,
-                                                                      ps1 => ps1.ps.ProductSupplierId,
-                                                                      pps => pps.ProductSupplierId,
-                                                                      (ps1, pps) => new { ps1, pps })
-                                                                .Where(o => o.pps.PackageId == selectedPackage.PackageId)
-                                                                .Select(o => o.ps1.p))
-                                            .ToList();
-                }
+                //Selects all Products that have a relationship with the selectedSupplier.
+                //Removes any matching entries returned from the subquery.
+                products = db.Products.Join(db.ProductsSuppliers,
+                                                p => p.ProductId,
+                                                ps => ps.ProductId,
+                                                (p, ps) => new { p, ps })
+                                        .Where(o => o.ps.SupplierId == selectedSupplier.SupplierId)
+                                        .Select(k => k.p)
+                                        .Except(//Subquery: Selects all Products that have a relationship with the selectedPackage.
+                                                db.Products.Join(db.ProductsSuppliers,
+                                                                    p => p.ProductId,
+                                                                    ps => ps.ProductId,
+                                                                    (p, ps) => new { p, ps })
+                                                            .Join(db.PackagesProductsSuppliers,
+                                                                    ps1 => ps1.ps.ProductSupplierId,
+                                                                    pps => pps.ProductSupplierId,
+                                                                    (ps1, pps) => new { ps1, pps })
+                                                            .Where(o => o.pps.PackageId == selectedPackage.PackageId)
+                                                            .Select(o => o.ps1.p))
+                                        .ToList();
             }
-            catch (DbUpdateException ex)
-            {
-                Handles.HandleDbUpdateException(ex);
-            }
-            catch (Exception ex)
-            {
-                Handles.LogToDebug(ex);
-            }
-
             return products;
         }
     }
