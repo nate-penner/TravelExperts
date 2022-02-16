@@ -22,10 +22,8 @@ namespace TravelExpertsGUI
         // Establish public variables to assigned and passed to form
         public Supplier CurrentSupplier;
         public bool IsAdd;
-        public List<Product> AddedProducts = new List<Product>();
-        // Select all product from database
-        private List<Product> products = ProductDB.GetProducts();
-
+        public List<Product> activeProducts = new List<Product>();
+        public List<Product> availableProducts = new List<Product>();
 
         public frmAddModifySuppliers()
         {
@@ -37,6 +35,8 @@ namespace TravelExpertsGUI
         {
             if (IsAdd)
             {
+                // Select all product from database
+                availableProducts = ProductDB.GetProducts();
                 // Loads the Add mode
                 this.Text = "Add Supplier";
                 lblWarning.Hide();
@@ -51,11 +51,18 @@ namespace TravelExpertsGUI
                 txtSupplierId.Enabled = false;
                 txtSupplierName.Text = CurrentSupplier.SupName;
 
+                //Load tables
+                availableProducts = ProductDB.GetProductsExcluding(CurrentSupplier);
+                activeProducts = ProductDB.GetProducts(CurrentSupplier);
+
+                lblWarning.Hide(); //Testing
+
+                RenderList();
                 //Hides all controls for adding products when the modify 
-                lstProducts.Hide();
-                lstAddedProducts.Hide();
-                btnAddProduct.Hide();
-                btnRemoveProduct.Hide();
+                //lstProducts.Hide();
+                //lstAddedProducts.Hide();
+                //btnAddProduct.Hide();
+                //btnRemoveProduct.Hide();
             }
 
         }
@@ -82,21 +89,49 @@ namespace TravelExpertsGUI
         {
             if (lstProducts.SelectedValue != null)
             {
-                AddedProducts.Add((Product)lstProducts.SelectedValue);
-                products.Remove((Product)lstProducts.SelectedValue);
+                Product selectedProduct = (Product)lstProducts.SelectedValue;
+                activeProducts.Add(selectedProduct);
+                availableProducts.Remove(selectedProduct);
                 // Re-renders the lists to add/remove items
                 RenderList();
             }
         }
         // Implements the RemoveProduct on click method, removes the selected product from the AddedProduct list
-        // Author: Daniel Palmer 
+        // Author: Daniel Palmer
+        // Updated by: Alex, adapted Nate's code to allow removals of ProductsSupplier
         private void btnRemoveProduct_Click(object sender, EventArgs e)
         {
             // Ensures there is a product selected
             if (lstAddedProducts.SelectedValue != null)
             {
-                products.Add((Product)lstAddedProducts.SelectedValue);
-                AddedProducts.Remove((Product)lstAddedProducts.SelectedValue);
+                Product selectedProduct = (Product)lstAddedProducts.SelectedValue;
+
+                // Check if ProductsSupplier is in any Package
+                ProductsSupplier ps = ProductSupplierDB.GetProductSupplier(
+                    selectedProduct, CurrentSupplier);
+
+                List<Package> packages = null;
+
+                if (ps != null)
+                    packages = ProductSupplierDB.GetPackages(ps);
+
+                if (packages != null && packages.Count > 0)
+                {
+                    string[] packageNames = packages.Select(p => p.PkgName).ToArray();
+                    MessageBox.Show(
+                        $"The supplier {CurrentSupplier.SupName} for {selectedProduct.ProdName} " +
+                        " could not be deleted because it is being used by the following " +
+                        $"packages:\n\t{string.Join("\n\t", packageNames)}\n" +
+                        "Please remove this product supplier from all packages before " +
+                        "deleting!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                {
+
+                    availableProducts.Add(selectedProduct);
+                    activeProducts.Remove(selectedProduct);
+                }
+
                 // Re-renders the lists to add/remove items
                 RenderList();
             }
@@ -107,11 +142,11 @@ namespace TravelExpertsGUI
         private void RenderList()
         {
             lstProducts.DataSource = null;
-            lstProducts.DataSource = products;
+            lstProducts.DataSource = availableProducts;
             lstProducts.DisplayMember = "ProdName";
 
             lstAddedProducts.DataSource = null;
-            lstAddedProducts.DataSource = AddedProducts;
+            lstAddedProducts.DataSource = activeProducts;
             lstAddedProducts.DisplayMember = "ProdName";
         }
 

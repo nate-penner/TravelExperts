@@ -245,7 +245,7 @@ namespace TravelExpertsGUI
             {
                 // Grabs the Supplier and product created by the form
                 Supplier CurrentSupplier = AddForm.CurrentSupplier;
-                List<Product> AddedProducts = AddForm.AddedProducts;
+                List<Product> AddedProducts = AddForm.activeProducts;
                 SupplierDB.AddSupplier(CurrentSupplier);
 
                 // Loop over all products in the generated product list, and add them with the supplier to the ProductsSupplier Table
@@ -268,11 +268,44 @@ namespace TravelExpertsGUI
 
             DialogResult result = ModifyForm.ShowDialog();
 
+            // If everything is OK
             if (result == DialogResult.OK)
             {
                 // Grabs all changes to the supplier data and updates the table
                 Supplier CurrentSupplier = ModifyForm.CurrentSupplier;
                 SupplierDB.UpdateSupplier(CurrentSupplier);
+
+
+
+                    // Update the suppliers for the product, retrieving any package names
+                    // conflicting with any Product suppliers
+                    List<String> packageNames = ProductSupplierDB.UpdateProductSuppliers(
+                        ModifyForm.activeProducts, CurrentSupplier
+                        );
+
+
+                    // Show an error message if there managed to be any conflicts.
+                    // This should never run because it is checked in the form!
+                    if (packageNames != null && packageNames.Count > 0)
+                    {
+
+                        MessageBox.Show("The following packages blocked some deletions: " +
+                            $"{string.Join(", ", packageNames.ToArray())}");
+                    }
+
+
+                    //// Updates the Product list in the supplier tab. Fixes edge case where supplier products do not update
+                    //// when the selected supplier is removed as a supplier of a product
+                    //List<Product> SupplierTabproducts = TravelExpertsDataAPI.ProductDB.GetProducts(lstSupplierTabsupplier);
+                    //SupplierTabRenderProductsList(SupplierTabproducts);
+                
+                
+            }
+            else if (result != DialogResult.Cancel)
+            {
+                // Show an error message
+                MessageBox.Show("Unable to edit the product or suppliers!", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             //Re-renders the list
             SupplierTabRenderList();

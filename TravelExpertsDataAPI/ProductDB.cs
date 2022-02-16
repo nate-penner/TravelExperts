@@ -216,6 +216,44 @@ namespace TravelExpertsDataAPI
             return products;
         }
 
+        // Author: Alex Cress
+        /// <summary>
+        /// Gets a list of products NOT associated with the given Supplier.
+        /// </summary>
+        /// <param name="package">the Supplier context</param>
+        /// <returns>A list of products, or null if there are none</returns>
+        public static List<Product> GetProductsExcluding(Supplier supplier)
+        {
+            List<Product> products = null;
+
+            try
+            {
+                using (TravelExpertsContext db = new TravelExpertsContext())
+                {
+                    
+                    products = db.Products.Except(db.ProductsSuppliers.Where(ps => !db.ProductsSuppliersArchives.Select(psa => psa.ProductSupplierId).ToList().Contains(ps.ProductSupplierId))
+                                                    .Join(
+                                                         db.Products,
+                                                         p => p.ProductId,
+                                                         ps => ps.ProductId,
+                                                         (ps, p) => new { p, ps })
+                                                    .Where(o => o.ps.SupplierId == supplier.SupplierId)
+                                                    .Select(o => o.p))
+                                          .ToList();
+                }
+            }
+            catch (DbUpdateException ex)
+            {
+                Handles.HandleDbUpdateException(ex);
+            }
+            catch (Exception ex)
+            {
+                Handles.LogToDebug(ex);
+            }
+
+            return products;
+        }
+
         public static List<Product> GetProductsForSupplierExcludingPackage(Package selectedPackage, Supplier selectedSupplier)
         {
             List<Product> products = null;
