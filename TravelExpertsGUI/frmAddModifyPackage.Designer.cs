@@ -108,43 +108,47 @@ namespace TravelExpertsGUI
             // txtName
             // 
             this.txtName.Location = new System.Drawing.Point(215, 41);
-            this.txtName.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtName.Margin = new System.Windows.Forms.Padding(4);
             this.txtName.MaxLength = 50;
             this.txtName.Multiline = true;
             this.txtName.Name = "txtName";
             this.txtName.Size = new System.Drawing.Size(259, 59);
             this.txtName.TabIndex = 6;
+            this.txtName.Tag = "Name";
             // 
             // txtDescription
             // 
             this.txtDescription.Location = new System.Drawing.Point(215, 125);
-            this.txtDescription.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtDescription.Margin = new System.Windows.Forms.Padding(4);
             this.txtDescription.MaxLength = 50;
             this.txtDescription.Multiline = true;
             this.txtDescription.Name = "txtDescription";
             this.txtDescription.Size = new System.Drawing.Size(259, 59);
             this.txtDescription.TabIndex = 9;
+            this.txtDescription.Tag = "Description";
             // 
             // txtBasePrice
             // 
             this.txtBasePrice.Location = new System.Drawing.Point(215, 302);
-            this.txtBasePrice.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtBasePrice.Margin = new System.Windows.Forms.Padding(4);
             this.txtBasePrice.Name = "txtBasePrice";
             this.txtBasePrice.Size = new System.Drawing.Size(127, 29);
             this.txtBasePrice.TabIndex = 10;
+            this.txtBasePrice.Tag = "Base Price";
             // 
             // txtAgencyCommission
             // 
             this.txtAgencyCommission.Location = new System.Drawing.Point(215, 350);
-            this.txtAgencyCommission.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtAgencyCommission.Margin = new System.Windows.Forms.Padding(4);
             this.txtAgencyCommission.Name = "txtAgencyCommission";
             this.txtAgencyCommission.Size = new System.Drawing.Size(127, 29);
             this.txtAgencyCommission.TabIndex = 11;
+            this.txtAgencyCommission.Tag = "Agency Commission";
             // 
             // btnAccept
             // 
             this.btnAccept.Location = new System.Drawing.Point(368, 302);
-            this.btnAccept.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnAccept.Margin = new System.Windows.Forms.Padding(4);
             this.btnAccept.Name = "btnAccept";
             this.btnAccept.Size = new System.Drawing.Size(96, 29);
             this.btnAccept.TabIndex = 12;
@@ -155,7 +159,7 @@ namespace TravelExpertsGUI
             // btnCancel
             // 
             this.btnCancel.Location = new System.Drawing.Point(368, 350);
-            this.btnCancel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnCancel.Margin = new System.Windows.Forms.Padding(4);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(96, 29);
             this.btnCancel.TabIndex = 13;
@@ -166,7 +170,7 @@ namespace TravelExpertsGUI
             // dtpStartDate
             // 
             this.dtpStartDate.Location = new System.Drawing.Point(215, 211);
-            this.dtpStartDate.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.dtpStartDate.Margin = new System.Windows.Forms.Padding(4);
             this.dtpStartDate.Name = "dtpStartDate";
             this.dtpStartDate.Size = new System.Drawing.Size(259, 29);
             this.dtpStartDate.TabIndex = 14;
@@ -174,7 +178,7 @@ namespace TravelExpertsGUI
             // dtpEndDate
             // 
             this.dtpEndDate.Location = new System.Drawing.Point(215, 256);
-            this.dtpEndDate.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.dtpEndDate.Margin = new System.Windows.Forms.Padding(4);
             this.dtpEndDate.Name = "dtpEndDate";
             this.dtpEndDate.Size = new System.Drawing.Size(259, 29);
             this.dtpEndDate.TabIndex = 15;
@@ -182,12 +186,10 @@ namespace TravelExpertsGUI
             // frmAddModifyPackage
             // 
             this.AcceptButton = this.btnAccept;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 21F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(427, 381);
             this.BackColor = System.Drawing.Color.SkyBlue;
+            this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(651, 425);
             this.Controls.Add(this.dtpEndDate);
             this.Controls.Add(this.dtpStartDate);
@@ -204,7 +206,7 @@ namespace TravelExpertsGUI
             this.Controls.Add(this.lblPackageStartDate);
             this.Controls.Add(this.lblPackageName);
             this.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "frmAddModifyPackage";
             this.Text = "New Package";
             this.Load += new System.EventHandler(this.frmAddModifyPackage_Load);

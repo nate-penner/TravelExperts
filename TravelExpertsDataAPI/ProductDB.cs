@@ -254,6 +254,13 @@ namespace TravelExpertsDataAPI
             return products;
         }
 
+        // Author: Alex Cress
+        /// <summary>
+        /// Gets all the Products for a given Supplier, excluding those that are already included in the given Package.
+        /// </summary>
+        /// <param name="selectedPackage">the Package</param>
+        /// <param name="selectedSupplier">the Supplier</param>
+        /// <returns>a list of Products</returns>
         public static List<Product> GetProductsForSupplierExcludingPackage(Package selectedPackage, Supplier selectedSupplier)
         {
             List<Product> products = null;

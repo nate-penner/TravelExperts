@@ -237,7 +237,12 @@ namespace TravelExpertsGUI
         /// <returns></returns>
         public static bool IsValidPackage(Package package)
         {
-            //TODO Check docs/implement all business-level requirements
+            //Agency commission must not be greater than base price
+            if(package.PkgBasePrice < package.PkgAgencyCommission)
+            {
+                MessageBox.Show("Agency Commission must not be greater than Base Price!");
+                return false;
+            }
 
             //Start date is not before end date
             if (DateTime.Compare((DateTime) package.PkgStartDate, (DateTime) package.PkgEndDate) >= 0)

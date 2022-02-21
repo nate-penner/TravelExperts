@@ -204,25 +204,20 @@ namespace TravelExpertsDataAPI
             }
         }
 
+        /// <summary>
+        /// Gets all Product, Supplier, and ProductSupplier information for the given Package.
+        /// </summary>
+        /// <param name="package"></param>
+        /// <returns>a list of ProductSupplierDTOs</returns>
         public static List<ProductsSupplierDTO> GetProductsSupplierDTOs(Package package)
         {
             List<ProductsSupplierDTO> DTOs = new List<ProductsSupplierDTO>();
-
-
-            //select s.SupplierId, SupName, p.ProductId, ProdName, ps.ProductSupplierId
-            //from Suppliers s
-            //join Products_Suppliers ps
-            //ON s.SupplierId = ps.SupplierId
-            //join Products p
-            //ON p.ProductId = ps.ProductId
-            //join Packages_Products_Suppliers pps
-            //ON pps.ProductSupplierId = ps.ProductSupplierId
-            //where PackageId = 1
 
             using (TravelExpertsContext db = new TravelExpertsContext())
             {
                 try
                 {
+                    //Join all tables and extract an anonymous object from the result set
                     var result = db.Suppliers.Join(db.ProductsSuppliers,
                                                 s => s.SupplierId,
                                                 ps => ps.SupplierId,
@@ -245,7 +240,7 @@ namespace TravelExpertsDataAPI
                                               ProductSupplierId = o.pps.ProductSupplierId
                                           });
 
-
+                    //Extract info from anonymous object and build DTOs
                     foreach (var ele in result)
                     {
                         Product p = new Product();
