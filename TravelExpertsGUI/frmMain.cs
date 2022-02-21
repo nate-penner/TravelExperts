@@ -36,7 +36,6 @@ namespace TravelExpertsGUI
             InitializePackageTab();
         }
 
-
         // Loads a list of products from the database into the Products tab
         // Author: Nate Penner
         private void loadProductsTab()
