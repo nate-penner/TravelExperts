@@ -186,6 +186,8 @@ namespace TravelExpertsGUI
         // Save this data and close the form
         private void btnSave_Click(object sender, EventArgs e)
         {
+            // Make sure they entered a product name, otherwise show an
+            // error message
             if (txtProductName.Text != "")
             {
                 SelectedProduct.ProdName = txtProductName.Text;
@@ -195,21 +197,6 @@ namespace TravelExpertsGUI
                 MessageBox.Show("Please enter a product name!", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtProductName.Focus();
-            }
-        }
-
-        private void frmProducts_Click(object sender, EventArgs e)
-        {
-            foreach (int index in lstPotentialSuppliers.SelectedIndices)
-            {
-                Supplier s = (Supplier)lstPotentialSuppliers.Items[index];
-                Product p = SelectedProduct;
-                ProductsSupplier ps = ProductSupplierDB.GetProductSupplier(p, s);
-                
-                if (ps != null && ProductSupplierDB.IsArchived(ps))
-                {
-                    MessageBox.Show($"{p.ProdName} offered by {s.SupName} is archived!");
-                }
             }
         }
     }
