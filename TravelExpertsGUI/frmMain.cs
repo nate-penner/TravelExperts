@@ -32,7 +32,7 @@ namespace TravelExpertsGUI
             // Load the products tab
             loadProductsTab();
 
-            //Load package panel
+            //Load package tab
             InitializePackageTab();
         }
 
@@ -76,7 +76,7 @@ namespace TravelExpertsGUI
         {
             txtSupplierTabSupplierId.Text = lstSupplierTabsupplier.SupplierId.ToString();
             txtSupplierTabProductCount.Text = product.Count().ToString();
-            lstSupplierTabProducts.DataSource = product;
+            lstSupplierTabProducts.DataSource = product.OrderBy(p => p.ProdName).ToList();
             lstSupplierTabProducts.DisplayMember = "ProdName";
         }
 
@@ -244,7 +244,7 @@ namespace TravelExpertsGUI
             {
                 // Grabs the Supplier and product created by the form
                 Supplier CurrentSupplier = AddForm.CurrentSupplier;
-                List<Product> AddedProducts = AddForm.AddedProducts;
+                List<Product> AddedProducts = AddForm.activeProducts;
                 SupplierDB.AddSupplier(CurrentSupplier);
 
                 // Loop over all products in the generated product list, and add them with the supplier to the ProductsSupplier Table
@@ -267,16 +267,55 @@ namespace TravelExpertsGUI
 
             DialogResult result = ModifyForm.ShowDialog();
 
+            // If everything is OK
             if (result == DialogResult.OK)
             {
                 // Grabs all changes to the supplier data and updates the table
                 Supplier CurrentSupplier = ModifyForm.CurrentSupplier;
                 SupplierDB.UpdateSupplier(CurrentSupplier);
+
+
+
+                    // Update the suppliers for the product, retrieving any package names
+                    // conflicting with any Product suppliers
+                    List<String> packageNames = ProductSupplierDB.UpdateProductSuppliers(
+                        ModifyForm.activeProducts, CurrentSupplier
+                        );
+
+
+                    // Show an error message if there managed to be any conflicts.
+                    // This should never run because it is checked in the form!
+                    if (packageNames != null && packageNames.Count > 0)
+                    {
+
+                        MessageBox.Show("The following packages blocked some deletions: " +
+                            $"{string.Join(", ", packageNames.ToArray())}");
+                    }
+
+
+                    //// Updates the Product list in the supplier tab. Fixes edge case where supplier products do not update
+                    //// when the selected supplier is removed as a supplier of a product
+                    //List<Product> SupplierTabproducts = TravelExpertsDataAPI.ProductDB.GetProducts(lstSupplierTabsupplier);
+                    //SupplierTabRenderProductsList(SupplierTabproducts);
+                
+                
+            }
+            else if (result != DialogResult.Cancel)
+            {
+                // Show an error message
+                MessageBox.Show("Unable to edit the product or suppliers!", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             //Re-renders the list
             SupplierTabRenderList();
         }
 
+
+        //////////////////////////////////////////////// Package Tab Code \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+        /// <summary>
+        /// Initilizes all lists in the Package.
+        /// </summary>
         private void InitializePackageTab()
         {
             PackageTabRenderPackages();
@@ -284,8 +323,6 @@ namespace TravelExpertsGUI
             PackageTabRenderSuppliers();
             PackageTabRenderProductSuppliers();
         }
-
-        //////////////////////////////////////////////// Package Tab Code \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
         //************************************************** Button Handlers ******************************************************
 
@@ -350,7 +387,6 @@ namespace TravelExpertsGUI
                 {
                     PackageDB.UpdatePackage(inputForm.package);
                 }
-                //TODO Alex- more specific error handling
                 catch (Exception ex)
                 {
                     MessageBox.Show($"Error while modifying PackageId {inputForm.package.PackageId}: {ex.Message}", "Database Error");
@@ -362,13 +398,13 @@ namespace TravelExpertsGUI
 
         // Author: Alex Cress
         /// <summary>
-        /// Deletes the selected Package from the database.
+        /// Deletes the selected Package from the database. All references in PackageProductSupplier will also be deleted.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void btnPackageTabDeletePackage_Click(object sender, EventArgs e)
         {
-            //Check if a row is selected (should always be selected by default)           
+            //Check if a row is selected        
             if (lstPackageTabPackages.SelectedItem == null)
             {
                 MessageBox.Show("Please select a Package from the list to delete.");
@@ -402,19 +438,29 @@ namespace TravelExpertsGUI
             Package selectedPackage = PackageTabGetSelectedPackage();
             Product selectedProduct = PackageTabGetSelectedProduct();
             Supplier selectedSupplier = PackageTabGetSelectedSupplier();
-            ProductsSupplier productsSupplier;
 
+            ProductsSupplier productsSupplier = null;
             if (selectedPackage != null && selectedProduct != null)
             {
                 productsSupplier = ProductSupplierDB.GetProductsSupplier(selectedProduct, selectedSupplier);
+            }
 
-                if (productsSupplier != null)
+            if (productsSupplier != null)
+            {
+                //Create PackageProductSupplier if all valid
+                PackageDB.AddProduct(selectedPackage, productsSupplier);
+
+                //Render appropriate lists
+                if (radPackageTabByProduct.Checked)
                 {
-                    PackageDB.AddProduct(selectedPackage, productsSupplier);
-
                     PackageTabRenderSuppliers();
-                    PackageTabRenderProductSuppliers();
                 }
+                else if (radPackageTabBySupplier.Checked)
+                {
+                    PackageTabRenderProducts();
+                }
+
+                PackageTabRenderProductSuppliers();
             }
         }
 
@@ -428,15 +474,21 @@ namespace TravelExpertsGUI
         {
             //Get selected values
             Package selectedPackage = PackageTabGetSelectedPackage();
-            ProductsSupplier selectedProductsSupplier = PackageTabGetSelectedProductsSupplier().productsSupplier;
+            ProductsSupplierDTO dto = PackageTabGetSelectedProductsSupplier();
 
+            ProductsSupplier selectedProductsSupplier = null;
+            if (dto != null)
+            {
+                selectedProductsSupplier = dto.productsSupplier;
+            }
+            
+            //Remove PackageProductSupplier if valid
             if (selectedProductsSupplier != null)
             {
                 PackageDB.RemoveProductsSupplier(selectedPackage, selectedProductsSupplier);
 
                 PackageTabRenderProductSuppliers();
                 PackageTabRenderSuppliers();
-
             }
         }
 
@@ -444,7 +496,7 @@ namespace TravelExpertsGUI
 
         // Author: Alex Cress
         /// <summary>
-        /// Renders Product lists when Package selection changes
+        /// Renders appropriate lists when Package selection changes
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -452,13 +504,14 @@ namespace TravelExpertsGUI
         {
             PackageTabRenderPackageDetails();
             PackageTabRenderProducts();
+            PackageTabRenderSuppliers();
             PackageTabRenderProductSuppliers();
         }
 
         // Author: Alex Cress
         /// <summary>
-        /// Ensures only one value is selected between its sister table lstPackageTabActiveProducts and itself.
-        /// Updates Suppliers based off of selected package.
+        /// Updates the appropriate list(s) based off of the selected package and selection mode.
+        /// The selection mode is controlled by the radio buttons ByProduct and BySupplier.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -479,6 +532,13 @@ namespace TravelExpertsGUI
 
         }
 
+        // Author: Alex Cress
+        /// <summary>
+        /// Updates the appropriate list(s) based off of the selected package and selection mode.
+        /// The selection mode is controlled by the radio buttons ByProduct and BySupplier.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void lstPackageTabSuppliers_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (radPackageTabByProduct.Checked)
@@ -495,6 +555,12 @@ namespace TravelExpertsGUI
             }
         }
 
+        // Author: Alex Cress
+        /// <summary>
+        /// Updates the appropriate list(s) based off of the selected package and radio button selection.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void radGrpPackageTabAddProductsSupplier_CheckChanged(object sender, EventArgs e)
         {
             PackageTabRenderProducts();
@@ -505,7 +571,7 @@ namespace TravelExpertsGUI
 
         // Author: Alex Cress
         /// <summary>
-        /// Refreshes the Packages table Data Source.
+        /// Renders the Packages list.
         /// </summary>
         private void PackageTabRenderPackages()
         {
@@ -520,18 +586,23 @@ namespace TravelExpertsGUI
 
         // Author: Alex Cress
         /// <summary>
-        /// Refreshes the Packages table Data Source and retains selected index in the list.
+        /// Renders the Packages list and retains selected index in the list.
         /// </summary>
         /// <param name="index">the table index you want to be selected after refreshing</param>
         private void PackageTabRenderPackages(int index)
         {
             PackageTabRenderPackages();
-            lstPackageTabPackages.SelectedIndex = index;
+            //Check bounds
+            if(index < lstPackageTabPackages.Items.Count && index >= 0)
+            {
+                lstPackageTabPackages.SelectedIndex = index;
+            }
         }
 
         // Author: Alex Cress
         /// <summary>
-        /// Refreshes the Products table Data Source.
+        /// Renders the Products list base off of the selected Package and selection mode.
+        /// The selection mode is controlled by the radio buttons ByProduct and BySupplier.
         /// </summary>
         private void PackageTabRenderProducts()
         {
@@ -558,19 +629,19 @@ namespace TravelExpertsGUI
                 throw new NotImplementedException();
             }
 
-
             lstPackageTabAvailableProducts.DataSource = availableProducts;
             lstPackageTabAvailableProducts.DisplayMember = "ProdName";
-            lstPackageTabAvailableProducts.SelectedIndex = -1;
         }
 
         // Author: Alex Cress
         /// <summary>
-        /// Renders Supplier table using selected values from Product tables
+        /// Renders Supplier list based off of the selected Package and selection mode.
+        /// The selection mode is controlled by the radio buttons ByProduct and BySupplier.
         /// </summary>
         private void PackageTabRenderSuppliers()
         {
             List<Supplier> availableSuppliers = null;
+            int selectedIndex = lstPackageTabAvailableSuppliers.SelectedIndex;
 
             if (radPackageTabByProduct.Checked)
             {
@@ -586,8 +657,10 @@ namespace TravelExpertsGUI
             }
             else if (radPackageTabBySupplier.Checked)
             {
+                
                 //Get all Suppliers
                 availableSuppliers = SupplierDB.GetSuppliers();
+
             }
             else
             {
@@ -600,6 +673,10 @@ namespace TravelExpertsGUI
             lstPackageTabAvailableSuppliers.DisplayMember = "SupName";
         }
 
+        //Author: Alex Cress
+        /// <summary>
+        /// Renders ProductsSupplier table using selected Package.
+        /// </summary>
         private void PackageTabRenderProductSuppliers()
         {
             //Get ProductSuppliers for selected package
@@ -612,6 +689,10 @@ namespace TravelExpertsGUI
             gvPackageTabProductsSupplier.Columns["ProdName"].Width = 150;
         }
 
+        //Author: Alex Cress
+        /// <summary>
+        /// Updates package information panel using selected package.
+        /// </summary>
         private void PackageTabRenderPackageDetails()
         {
             Package selectedPackage = (Package)lstPackageTabPackages.SelectedValue;
@@ -664,7 +745,12 @@ namespace TravelExpertsGUI
         /// <returns>the selected ProductsSupplierDTO, or null if none selected</returns>
         private ProductsSupplierDTO PackageTabGetSelectedProductsSupplier()
         {
-            return (ProductsSupplierDTO) gvPackageTabProductsSupplier.CurrentRow.DataBoundItem;
+            ProductsSupplierDTO dto = null;
+            if(gvPackageTabProductsSupplier.CurrentRow != null)
+            {
+                dto = (ProductsSupplierDTO)gvPackageTabProductsSupplier.CurrentRow.DataBoundItem;
+            }
+            return dto;
         }
 
         private void frmMain_FormClosing(Object sender, FormClosingEventArgs e)

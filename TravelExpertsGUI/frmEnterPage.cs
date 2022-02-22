@@ -20,6 +20,7 @@ namespace TravelExpertsGUI
 
         private void btnEnter_Click(object sender, EventArgs e)
         {
+            //The login page is just a mockup, no functionality.
             frmMain main = new frmMain();
             main.EnterPage = this;
             main.Show();

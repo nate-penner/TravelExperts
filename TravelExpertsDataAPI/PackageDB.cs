@@ -135,61 +135,60 @@ namespace TravelExpertsDataAPI
             }
         }
 
+        /// <summary>
+        /// Gets all Product, Supplier, and ProductSupplier information for the given Package.
+        /// </summary>
+        /// <param name="package"></param>
+        /// <returns>a list of ProductSupplierDTOs</returns>
         public static List<ProductsSupplierDTO> GetProductsSupplierDTOs(Package package)
         {
             List<ProductsSupplierDTO> DTOs = new List<ProductsSupplierDTO>();
 
-
-            //select s.SupplierId, SupName, p.ProductId, ProdName, ps.ProductSupplierId
-            //from Suppliers s
-            //join Products_Suppliers ps
-            //ON s.SupplierId = ps.SupplierId
-            //join Products p
-            //ON p.ProductId = ps.ProductId
-            //join Packages_Products_Suppliers pps
-            //ON pps.ProductSupplierId = ps.ProductSupplierId
-            //where PackageId = 1
-
             using (TravelExpertsContext db = new TravelExpertsContext())
             {
-                var result = db.Suppliers.Join(db.ProductsSuppliers,
-                                            s => s.SupplierId,
-                                            ps => ps.SupplierId,
-                                            (s, ps) => new { s, ps })
-                                        .Join(db.Products,
-                                            ps1 => ps1.ps.ProductId,
-                                            p => p.ProductId,
-                                            (ps1, p) => new { ps1, p })
-                                        .Join(db.PackagesProductsSuppliers,
-                                            ps2 => ps2.ps1.ps.ProductSupplierId,
-                                            pps => pps.ProductSupplierId,
-                                            (ps2, pps) => new { ps2, pps })
-                                        .Where(pps2 => pps2.pps.PackageId == package.PackageId)
-                                        .Select(o => new
-                                        {
-                                            ProductId = o.ps2.p.ProductId,
-                                            ProdName = o.ps2.p.ProdName,
-                                            SupplierId = o.ps2.ps1.s.SupplierId,
-                                            SupName = o.ps2.ps1.s.SupName,
-                                            ProductSupplierId = o.pps.ProductSupplierId
-                                        });
-
-
-                foreach (var ele in result)
+                try
                 {
-                    Product p = new Product();
-                    p.ProductId = ele.ProductId;
-                    p.ProdName = ele.ProdName;
+                    //Join all tables and extract an anonymous object from the result set
+                    var result = db.Suppliers.Join(db.ProductsSuppliers,
+                                                s => s.SupplierId,
+                                                ps => ps.SupplierId,
+                                                (s, ps) => new { s, ps })
+                                          .Join(db.Products,
+                                                ps1 => ps1.ps.ProductId,
+                                                p => p.ProductId,
+                                                (ps1, p) => new { ps1, p })
+                                          .Join(db.PackagesProductsSuppliers,
+                                                ps2 => ps2.ps1.ps.ProductSupplierId,
+                                                pps => pps.ProductSupplierId,
+                                                (ps2, pps) => new { ps2, pps })
+                                          .Where(pps2 => pps2.pps.PackageId == package.PackageId)
+                                          .Select(o => new
+                                          {
+                                              ProductId = o.ps2.p.ProductId,
+                                              ProdName = o.ps2.p.ProdName,
+                                              SupplierId = o.ps2.ps1.s.SupplierId,
+                                              SupName = o.ps2.ps1.s.SupName,
+                                              ProductSupplierId = o.pps.ProductSupplierId
+                                          });
 
-                    Supplier s = new Supplier();
-                    s.SupplierId = ele.SupplierId;
-                    s.SupName = ele.SupName;
+                    //Extract info from anonymous object and build DTOs
+                    foreach (var ele in result)
+                    {
+                        Product p = new Product();
+                        p.ProductId = ele.ProductId;
+                        p.ProdName = ele.ProdName;
 
-                    ProductsSupplier ps = new ProductsSupplier();
-                    ps.ProductSupplierId = ele.ProductSupplierId;
+                        Supplier s = new Supplier();
+                        s.SupplierId = ele.SupplierId;
+                        s.SupName = ele.SupName;
 
-                    ProductsSupplierDTO dto = new ProductsSupplierDTO(p, s, ps);
-                    DTOs.Add(dto);
+                        ProductsSupplier ps = new ProductsSupplier();
+                        ps.ProductSupplierId = ele.ProductSupplierId;
+
+                        ProductsSupplierDTO dto = new ProductsSupplierDTO(p, s, ps);
+                        DTOs.Add(dto);
+                    }
+
                 }
 
             }

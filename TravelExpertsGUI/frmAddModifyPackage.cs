@@ -61,7 +61,7 @@ namespace TravelExpertsGUI
             }
             else if(action == FORM_ACTION.UPDATE)
             {
-                //Populate all fields
+                //Populate all fields with Package information
                 txtName.Text = package.PkgName;
                 txtDescription.Text = package.PkgDesc;
                 txtBasePrice.Text = package.PkgBasePrice.ToString("c");
@@ -85,8 +85,8 @@ namespace TravelExpertsGUI
             //Basic form validation
             if (Validator.IsPresent(txtName) &&
                 Validator.IsPresent(txtDescription) &&
-                Validator.IsNonNegativeDecimal(basePrice) &&
-                Validator.IsNonNegativeDecimal(agencyCommisson))         
+                Validator.IsNonNegativeDecimal(txtBasePrice) &&
+                Validator.IsNonNegativeDecimal(txtAgencyCommission))         
             {
                 //Populate a new Package
                 Package newPackage = new Package();

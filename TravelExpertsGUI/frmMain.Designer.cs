@@ -32,7 +32,6 @@ namespace TravelExpertsGUI
         {
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.gvPackageTabProductsSupplier = new System.Windows.Forms.DataGridView();
             this.label3 = new System.Windows.Forms.Label();
@@ -85,19 +84,23 @@ namespace TravelExpertsGUI
             this.lblSupplierTabSuppliers = new System.Windows.Forms.Label();
             this.lstSupplierTabSuppliers = new System.Windows.Forms.ListBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gvPackageTabProductsSupplier)).BeginInit();
             this.gbPackageTabAddProductSupplier.SuspendLayout();
             this.gbPackageTabSelectedPackage.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabSuppliers.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControl1
             // 
+            this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl1.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
@@ -106,7 +109,7 @@ namespace TravelExpertsGUI
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1075, 665);
+            this.tabControl1.Size = new System.Drawing.Size(1080, 665);
             this.tabControl1.TabIndex = 0;
             // 
             // tabPage1
@@ -121,22 +124,15 @@ namespace TravelExpertsGUI
             this.tabPage1.Location = new System.Drawing.Point(4, 33);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(1067, 628);
+            this.tabPage1.Size = new System.Drawing.Size(1072, 628);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Packages";
             // 
-            // pictureBox1
-            // 
-            this.pictureBox1.BackgroundImage = global::TravelExpertsGUI.Properties.Resources.clippy;
-            this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.pictureBox1.Location = new System.Drawing.Point(831, 14);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(223, 287);
-            this.pictureBox1.TabIndex = 27;
-            this.pictureBox1.TabStop = false;
-            // 
             // groupBox1
             // 
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.gvPackageTabProductsSupplier);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.btnPackageTabRemoveProductSupplier);
@@ -184,6 +180,9 @@ namespace TravelExpertsGUI
             // 
             // gbPackageTabAddProductSupplier
             // 
+            this.gbPackageTabAddProductSupplier.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.gbPackageTabAddProductSupplier.Controls.Add(this.radPackageTabBySupplier);
             this.gbPackageTabAddProductSupplier.Controls.Add(this.radPackageTabByProduct);
             this.gbPackageTabAddProductSupplier.Controls.Add(this.btnPackageTabAddProduct);
@@ -272,6 +271,9 @@ namespace TravelExpertsGUI
             // 
             // gbPackageTabSelectedPackage
             // 
+            this.gbPackageTabSelectedPackage.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.gbPackageTabSelectedPackage.Controls.Add(this.txtPackageTabPackageEndDate);
             this.gbPackageTabSelectedPackage.Controls.Add(this.txtPackageTabPackageStartDate);
             this.gbPackageTabSelectedPackage.Controls.Add(this.lblPackageAgencyCommission);
@@ -437,17 +439,23 @@ namespace TravelExpertsGUI
             // 
             // lstPackageTabPackages
             // 
+            this.lstPackageTabPackages.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lstPackageTabPackages.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.lstPackageTabPackages.FormattingEnabled = true;
             this.lstPackageTabPackages.ItemHeight = 21;
             this.lstPackageTabPackages.Location = new System.Drawing.Point(16, 32);
             this.lstPackageTabPackages.Name = "lstPackageTabPackages";
-            this.lstPackageTabPackages.Size = new System.Drawing.Size(290, 193);
+            this.lstPackageTabPackages.Size = new System.Drawing.Size(290, 256);
             this.lstPackageTabPackages.TabIndex = 3;
             this.lstPackageTabPackages.SelectedIndexChanged += new System.EventHandler(this.lstPackageTabPackages_SelectedIndexChanged);
             // 
             // lblPackagesTabPackages
             // 
+            this.lblPackagesTabPackages.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lblPackagesTabPackages.AutoSize = true;
             this.lblPackagesTabPackages.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.lblPackagesTabPackages.Location = new System.Drawing.Point(16, 6);
@@ -472,14 +480,14 @@ namespace TravelExpertsGUI
             this.tabPage2.Location = new System.Drawing.Point(4, 33);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(1067, 628);
+            this.tabPage2.Size = new System.Drawing.Size(1072, 628);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Products";
             // 
             // lblProductTabSupplierCount
             // 
             this.lblProductTabSupplierCount.AutoSize = true;
-            this.lblProductTabSupplierCount.Location = new System.Drawing.Point(437, 243);
+            this.lblProductTabSupplierCount.Location = new System.Drawing.Point(417, 244);
             this.lblProductTabSupplierCount.Name = "lblProductTabSupplierCount";
             this.lblProductTabSupplierCount.Size = new System.Drawing.Size(118, 21);
             this.lblProductTabSupplierCount.TabIndex = 13;
@@ -488,7 +496,7 @@ namespace TravelExpertsGUI
             // lblProductTabProductId
             // 
             this.lblProductTabProductId.AutoSize = true;
-            this.lblProductTabProductId.Location = new System.Drawing.Point(175, 243);
+            this.lblProductTabProductId.Location = new System.Drawing.Point(175, 244);
             this.lblProductTabProductId.Name = "lblProductTabProductId";
             this.lblProductTabProductId.Size = new System.Drawing.Size(86, 21);
             this.lblProductTabProductId.TabIndex = 12;
@@ -518,9 +526,9 @@ namespace TravelExpertsGUI
             // 
             this.txtProductTabTotalSuppliers.BackColor = System.Drawing.SystemColors.Info;
             this.txtProductTabTotalSuppliers.Enabled = false;
-            this.txtProductTabTotalSuppliers.Location = new System.Drawing.Point(561, 240);
+            this.txtProductTabTotalSuppliers.Location = new System.Drawing.Point(541, 240);
             this.txtProductTabTotalSuppliers.Name = "txtProductTabTotalSuppliers";
-            this.txtProductTabTotalSuppliers.Size = new System.Drawing.Size(37, 29);
+            this.txtProductTabTotalSuppliers.Size = new System.Drawing.Size(57, 29);
             this.txtProductTabTotalSuppliers.TabIndex = 9;
             // 
             // txtProductTabProductID
@@ -529,7 +537,7 @@ namespace TravelExpertsGUI
             this.txtProductTabProductID.Enabled = false;
             this.txtProductTabProductID.Location = new System.Drawing.Point(267, 240);
             this.txtProductTabProductID.Name = "txtProductTabProductID";
-            this.txtProductTabProductID.Size = new System.Drawing.Size(37, 29);
+            this.txtProductTabProductID.Size = new System.Drawing.Size(70, 29);
             this.txtProductTabProductID.TabIndex = 7;
             // 
             // lstProductTabSuppliers
@@ -586,7 +594,7 @@ namespace TravelExpertsGUI
             this.tabSuppliers.Controls.Add(this.lstSupplierTabSuppliers);
             this.tabSuppliers.Location = new System.Drawing.Point(4, 33);
             this.tabSuppliers.Name = "tabSuppliers";
-            this.tabSuppliers.Size = new System.Drawing.Size(1067, 628);
+            this.tabSuppliers.Size = new System.Drawing.Size(1072, 628);
             this.tabSuppliers.TabIndex = 2;
             this.tabSuppliers.Text = "Suppliers";
             // 
@@ -613,11 +621,11 @@ namespace TravelExpertsGUI
             // lblSupplierTabProductId
             // 
             this.lblSupplierTabProductId.AutoSize = true;
-            this.lblSupplierTabProductId.Location = new System.Drawing.Point(475, 243);
+            this.lblSupplierTabProductId.Location = new System.Drawing.Point(425, 243);
             this.lblSupplierTabProductId.Name = "lblSupplierTabProductId";
-            this.lblSupplierTabProductId.Size = new System.Drawing.Size(80, 21);
+            this.lblSupplierTabProductId.Size = new System.Drawing.Size(110, 21);
             this.lblSupplierTabProductId.TabIndex = 7;
-            this.lblSupplierTabProductId.Text = "ProductId:";
+            this.lblSupplierTabProductId.Text = "Total Products:";
             // 
             // lblSupplierTabSupplierId
             // 
@@ -630,18 +638,20 @@ namespace TravelExpertsGUI
             // 
             // txtSupplierTabProductCount
             // 
-            this.txtSupplierTabProductCount.Location = new System.Drawing.Point(561, 240);
+            this.txtSupplierTabProductCount.BackColor = System.Drawing.SystemColors.Info;
+            this.txtSupplierTabProductCount.Location = new System.Drawing.Point(541, 240);
             this.txtSupplierTabProductCount.Name = "txtSupplierTabProductCount";
             this.txtSupplierTabProductCount.ReadOnly = true;
-            this.txtSupplierTabProductCount.Size = new System.Drawing.Size(37, 29);
+            this.txtSupplierTabProductCount.Size = new System.Drawing.Size(57, 29);
             this.txtSupplierTabProductCount.TabIndex = 5;
             // 
             // txtSupplierTabSupplierId
             // 
+            this.txtSupplierTabSupplierId.BackColor = System.Drawing.SystemColors.Info;
             this.txtSupplierTabSupplierId.Location = new System.Drawing.Point(267, 240);
             this.txtSupplierTabSupplierId.Name = "txtSupplierTabSupplierId";
             this.txtSupplierTabSupplierId.ReadOnly = true;
-            this.txtSupplierTabSupplierId.Size = new System.Drawing.Size(37, 29);
+            this.txtSupplierTabSupplierId.Size = new System.Drawing.Size(70, 29);
             this.txtSupplierTabSupplierId.TabIndex = 4;
             // 
             // lstSupplierTabProducts
@@ -690,21 +700,30 @@ namespace TravelExpertsGUI
             this.tabPage3.Size = new System.Drawing.Size(200, 100);
             this.tabPage3.TabIndex = 0;
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = global::TravelExpertsGUI.Properties.Resources.clippy;
+            this.pictureBox1.Location = new System.Drawing.Point(825, 14);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(229, 287);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.pictureBox1.TabIndex = 27;
+            this.pictureBox1.TabStop = false;
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.ClientSize = new System.Drawing.Size(1076, 668);
+            this.BackColor = System.Drawing.Color.SkyBlue;
+            this.ClientSize = new System.Drawing.Size(1082, 668);
             this.Controls.Add(this.tabControl1);
             this.Name = "frmMain";
-            this.Text = "Travel Experts 0.1-PRE-ALPHA";
+            this.Text = "Travel Experts Database Manager";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);
             this.Load += new System.EventHandler(this.frmMain_Load);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gvPackageTabProductsSupplier)).EndInit();
@@ -716,6 +735,7 @@ namespace TravelExpertsGUI
             this.tabPage2.PerformLayout();
             this.tabSuppliers.ResumeLayout(false);
             this.tabSuppliers.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
         }

@@ -209,6 +209,72 @@ namespace TravelExpertsDataAPI
             return packageNames;
         }
 
+
+        //Updated by: Alex- repurposed code from UpdateProductSuppliers(Product product, List<Supplier> suppliers)
+        /// <summary>
+        /// Updates the relationship in the database between the supplier passed and the
+        /// products they offer.
+        /// </summary>
+        /// <author>Nate Penner</author>
+        /// <param name="products">The new products list</param>
+        /// <param name="supplier">The supplier to be updated</param>
+        /// <returns>
+        ///     A list of strings containing package names that caused any 
+        ///     conflict with this update
+        /// </returns>
+        public static List<string> UpdateProductSuppliers(List<Product> products, Supplier supplier)
+        {
+            // Conflicting package names
+            List<string> packageNames = new List<string>();
+
+            // A list of IDs of the products from the new product list passed
+            List<int> productIds = products.Select(p => p.ProductId).ToList();
+
+            // A list of current products for this supplier, retrieved from the database
+            List<Product> savedProducts = ProductDB.GetProducts(supplier).ToList();
+
+            // The IDs of the saved suppliers
+            List<int> savedProductIds = savedProducts.Select(p => p.ProductId).ToList();
+
+            // Archive any products not in the new list
+            savedProducts.ForEach(p =>
+            {
+                if (!productIds.Contains(p.ProductId))
+                {
+                    // Try to archive this product supplier, getting any conflicting package names
+                    // if not possible
+                    List<Package> packages = ProductsSuppliersArchiveDB.ArchiveProductsSupplier(p, supplier);
+
+                    if (packages != null && packages.Count > 0)
+                        packages.ForEach(pkgName => packageNames.Add(pkgName.PkgName));
+                }
+            });
+
+            // Add any products not saved in the database
+            products.ForEach(p =>
+            {
+                // Get the ProductsSupplier for this product from the database
+                ProductsSupplier ps = ProductSupplierDB.GetProductsSupplier(p, supplier);
+
+                // If it's null, it wasn't in the databse
+                if (ps == null)
+                {
+                    // Add it to the database
+                    ProductSupplierDB.AddProductSupplier(p, supplier);
+                }
+                else
+                {
+                    // If it's archived, just unarchive it rather than creating a new ProductsSupplier
+                    if (IsArchived(ps))
+                    {
+                        Unarchive(ps);
+                    }
+                }
+            });
+
+            return packageNames;
+        }
+
         /// <summary>
         /// Removes a Product supplier from the archive table, making it active again
         /// </summary>
