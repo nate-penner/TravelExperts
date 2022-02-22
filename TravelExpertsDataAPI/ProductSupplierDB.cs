@@ -30,18 +30,12 @@ namespace TravelExpertsDataAPI
             ProductsSupplier productSupplier = new ProductsSupplier();
             productSupplier.ProductId = product.ProductId;
             productSupplier.SupplierId = supplier.SupplierId;
-            try
+            using (TravelExpertsContext db = new TravelExpertsContext())
             {
-                using (TravelExpertsContext db = new TravelExpertsContext())
-                {
-                    db.ProductsSuppliers.Add(productSupplier);
-                    db.SaveChanges();
-                }
+                db.ProductsSuppliers.Add(productSupplier);
+                db.SaveChanges();
             }
-            catch (DbUpdateException ex)
-            {
-                Handles.HandleDbUpdateException(ex);
-            }
+            
         }
 
         /// <summary>
@@ -288,21 +282,15 @@ namespace TravelExpertsDataAPI
         /// <param name="ps">The Product supplier to reactivate</param>
         public static void Unarchive(ProductsSupplier ps)
         {
-            try
+            // Connect to the databse
+            using (TravelExpertsContext db = new TravelExpertsContext())
             {
-                // Connect to the databse
-                using (TravelExpertsContext db = new TravelExpertsContext())
-                {
-                    // Get the ProductsSuppliersArchive object to delete
-                    ProductsSuppliersArchive psa = db.ProductsSuppliersArchives.Find(ps.ProductSupplierId);
+                // Get the ProductsSuppliersArchive object to delete
+                ProductsSuppliersArchive psa = db.ProductsSuppliersArchives.Find(ps.ProductSupplierId);
 
-                    // Remove it and save
-                    db.ProductsSuppliersArchives.Remove(psa);
-                    db.SaveChanges();
-                }
-            } catch (DbUpdateException ex)
-            {
-                Handles.HandleDbUpdateException(ex);
+                // Remove it and save
+                db.ProductsSuppliersArchives.Remove(psa);
+                db.SaveChanges();
             }
         }
 
@@ -327,24 +315,12 @@ namespace TravelExpertsDataAPI
         public static ProductsSupplier GetProductsSupplier(Product product, Supplier supplier)
         {
             ProductsSupplier productsSupplier = null;
-            try
-            {
                 using (TravelExpertsContext db = new TravelExpertsContext())
                 {
                     productsSupplier = db.ProductsSuppliers.Where(o => o.SupplierId == supplier.SupplierId
                                                                   && o.ProductId == product.ProductId)
                                                            .First();
                 }
-            }
-            catch (DbUpdateException ex)
-            {
-                Handles.HandleDbUpdateException(ex);
-            }
-            catch (Exception ex)
-            {
-                Handles.LogToDebug(ex);
-            }
-
             return productsSupplier;
         }
     }

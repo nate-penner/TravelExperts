@@ -169,7 +169,6 @@ namespace TravelExpertsGUI
             this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "frmProducts";
             this.Load += new System.EventHandler(this.frmProducts_Load);
-            this.Click += new System.EventHandler(this.frmProducts_Click);
             this.ResumeLayout(false);
             this.PerformLayout();
 
