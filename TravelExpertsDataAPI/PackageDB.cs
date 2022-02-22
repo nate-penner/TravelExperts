@@ -146,8 +146,7 @@ namespace TravelExpertsDataAPI
 
             using (TravelExpertsContext db = new TravelExpertsContext())
             {
-                try
-                {
+
                     //Join all tables and extract an anonymous object from the result set
                     var result = db.Suppliers.Join(db.ProductsSuppliers,
                                                 s => s.SupplierId,
@@ -189,7 +188,7 @@ namespace TravelExpertsDataAPI
                         DTOs.Add(dto);
                     }
 
-                }
+
 
             }
             return DTOs;
