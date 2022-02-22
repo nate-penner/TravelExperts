@@ -317,9 +317,12 @@ namespace TravelExpertsDataAPI
             ProductsSupplier productsSupplier = null;
                 using (TravelExpertsContext db = new TravelExpertsContext())
                 {
-                    productsSupplier = db.ProductsSuppliers.Where(o => o.SupplierId == supplier.SupplierId
-                                                                  && o.ProductId == product.ProductId)
-                                                           .First();
+                    var ps = db.ProductsSuppliers.Where(o => o.SupplierId == supplier.SupplierId
+                                                              && o.ProductId == product.ProductId);
+                    if(ps != null)
+                    {
+                    productsSupplier = ps.First();
+                    }                   
                 }
             return productsSupplier;
         }
