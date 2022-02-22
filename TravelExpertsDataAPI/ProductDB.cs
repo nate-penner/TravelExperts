@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TravelExpertsData;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace TravelExpertsDataAPI
 {
@@ -208,13 +209,9 @@ namespace TravelExpertsDataAPI
                                           .ToList();
                 }
             }
-            catch (DbUpdateException ex)
-            {
-                Handles.HandleDbUpdateException(ex);
-            }
             catch (Exception ex)
             {
-                Handles.LogToDebug(ex);
+                Debug.WriteLine(ex.InnerException);
             }
 
             return products;
